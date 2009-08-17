@@ -1,0 +1,43 @@
+/* -*- coding: utf-8 -*- */
+/* ------------------------------------------------------------------------------
+ * glumpy - Fast OpenGL numpy visualization
+ * Copyright (c) 2009 - Nicolas P. Rougier
+ *
+ * This file is part of glumpy.
+ *
+ * glumpy is free  software: you can redistribute it and/or  modify it under the
+ * terms of  the GNU General  Public License as  published by the  Free Software
+ * Foundation, either  version 3 of the  License, or (at your  option) any later
+ * version.
+ *
+ * glumpy is  distributed in the  hope that it  will be useful, but  WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy  of the GNU General Public License along with
+ * glumpy. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * -----------------------------------------------------------------------------
+ */
+/*
+ * Bilinear interpolation fragment shader
+ * --------------------------------------
+ *
+ * From gameRENDERING
+ * Unknown author
+ * http://www.gamerendering.com/2008/10/05/bilinear-interpolation/
+ *
+ */
+vec4
+texture2D_bilinear (sampler2D texture, vec2 uv, vec2 pixel)
+{
+    vec2 texel = uv/pixel;
+    vec2 f = fract(uv/pixel);
+    texel = (texel-fract(texel)+vec2(0.0001,0.0001))*pixel;
+    vec4 tl = texture2D(texture, texel);
+    vec4 tr = texture2D(texture, texel+vec2(1,0)*pixel);
+    vec4 bl = texture2D(texture, texel+vec2(0,1)*pixel);
+    vec4 br = texture2D(texture, texel+vec2(1,1)*pixel);
+    return mix(mix(tl,tr,f.x),mix(bl,br,f.x),f.y);
+    // return texture2D(texture, uv);
+}

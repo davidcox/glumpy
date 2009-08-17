@@ -1,0 +1,12 @@
+syntax: glob
+*.orig
+*.rej
+*~
+*.pyc
+build
+*.egg-info
+.DS_Store
+doc/_build/*
+
+syntax: regexp
+.*\#.*\#$

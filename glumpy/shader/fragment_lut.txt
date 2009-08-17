@@ -1,0 +1,21 @@
+/* -----------------------------------------------------------------------------
+ * glumpy -- Numpy OpenGL visualization framework
+ * Copyright (c) 2009 Nicolas Rougier <Nicolas.Rougier@loria.fr>
+ *
+ * Distributed under the terms of the BSD License. The full license is in the
+ * file file COPYING, distributed as part of this software.
+ * -----------------------------------------------------------------------------
+ */
+/*
+ * Lookup table fragment shader
+ * ----------------------------
+ */
+vec4
+texture1D_lut (sampler1D LUT, float a)
+{
+    // if (isnan(a)) {
+    //     return vec4 (1.0,1.0,0.0,1.0);
+    // } else {
+    return texture1D(LUT, a);
+    // }
+}
