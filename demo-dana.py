@@ -30,7 +30,6 @@ import glumpy
 import dana
 import scipy.sparse as sp
 
-
 transparent = np.array([1,2,3,255])
 items = []
 
