@@ -21,6 +21,7 @@
 # -----------------------------------------------------------------------------
 import numpy
 import pyglet
+pyglet.options['debug_gl'] = False
 import glumpy
 
 def func3(x,y):

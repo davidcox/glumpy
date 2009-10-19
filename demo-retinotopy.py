@@ -19,7 +19,7 @@
 # glumpy. If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------
-import Image
+from PIL import Image
 import numpy as np
 import pyglet, pyglet.gl as gl
 import glumpy
@@ -89,41 +89,55 @@ def retinotopy(Rs,Ps):
 
     return Px, Py
 
+def square(x,y,width,height):
+    gl.glColor4f(1,1,1,.5)
+    gl.glBegin(gl.GL_QUADS)
+    gl.glVertex2i(x,y)
+    gl.glVertex2i(x+width,y)
+    gl.glVertex2i(x+width,y+height)
+    gl.glVertex2i(x,y+height)
+    gl.glEnd()
+    gl.glColor4f(1,1,1,1)
+    gl.glBegin(gl.GL_LINE_LOOP)
+    gl.glVertex2i(x,y)
+    gl.glVertex2i(x+width,y)
+    gl.glVertex2i(x+width,y+height)
+    gl.glVertex2i(x,y+height)
+    gl.glEnd()
+
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    image = Image.open('lena-grey.png')
+    image = Image.open('lena.png')
     S = np.asarray(image, dtype=np.float32)/256. # Visual scene
-    R = np.zeros((256,256),dtype=np.float32)     # Retina
-    V = np.zeros((64*2,64*2),dtype=np.float32)     # "V1"
-    Px,Py = retinotopy(R.shape,V.shape)
+    R = np.zeros((256,256,3),dtype=np.float32)
+    V = np.zeros((256,256,3),dtype=np.float32)
+    Px,Py = retinotopy(R.shape[:2],V.shape[:2])
+    X,Y = 0,0
 
-    window = pyglet.window.Window(400*2,400)
+    window = pyglet.window.Window(S.shape[1]+2*V.shape[1], max(S.shape[0],2*V.shape[0]))
     Si = glumpy.Image(S, cmap=glumpy.colormap.Grey)
     Vi = glumpy.Image(V, cmap=glumpy.colormap.Grey)
+    gl.glBlendFunc (gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+    gl.glEnable(gl.GL_BLEND)
 
     @window.event
     def on_mouse_motion(x, y, dx, dy):
-        sx,sy = 2.0/window.width, 1.0/window.height
-        x_norm, y_norm = x*sx, 1-y*sy
-        R_norm = .5*R.shape[0]/float(S.shape[0]), .5*R.shape[1]/float(S.shape[1])
-        x_norm = max(min(x*sx, 1-R_norm[0]), R_norm[0])
-        y_norm = max(min(1-y*sy, 1-R_norm[1]), R_norm[1])
-        xi = int((x_norm-R_norm[0])*S.shape[0])
-        yi = int((y_norm-R_norm[1])*S.shape[1])
-        d = S[yi,xi].copy()
-        S[yi,xi] = 0
-        V[...] = S[yi+Px,xi+Py]
-        S[yi,xi] = d
-        x,y = x_norm/sx, (1-y_norm)/sy
+        global X,Y
+        X = min(max(x-V.shape[1]//2,0), S.shape[1]-V.shape[1])
+        Y = min(max((window.height-y)-V.shape[0]//2,0), S.shape[0]-V.shape[0])
+        V[...] = S[Y+Px,X+Py]
 
     @window.event
     def on_draw():
         window.clear()
+        gl.glColor4f(1,1,1,1)
         Si.update()
         Vi.update()
-        Si.blit(0*400,0,400,400)
-        Vi.blit(1*400,0,1*400,400)
+        Si.blit(0,0,S.shape[1],S.shape[0])
+        Vi.blit(S.shape[1],0,2*V.shape[1], 2*V.shape[0])
+        gl.glDisable(gl.GL_TEXTURE_2D)
+        square(X,window.height-Y,256,-256)
 
     pyglet.app.run()

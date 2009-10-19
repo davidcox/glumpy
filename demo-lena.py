@@ -19,7 +19,7 @@
 # glumpy. If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------
-import Image
+from PIL import Image
 import numpy
 import pyglet
 import glumpy
