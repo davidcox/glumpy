@@ -25,6 +25,7 @@ pyglet.options['debug_gl'] = False
 import pyglet.gl as gl
 import glumpy
 
+
 n = 512
 Z = numpy.random.randint(0,2,(n,n)).astype(numpy.float32)
 window = pyglet.window.Window(512, 512, vsync=0)
