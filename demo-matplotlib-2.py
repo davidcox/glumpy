@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -19,136 +19,49 @@
 # glumpy. If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------
-import pyglet
-pyglet.options['debug_gl'] = False
-import pyglet.gl as gl
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import numpy as np
-import glumpy
+import numpy, glumpy
+from glumpy.pylab import *
 
 
-transparent = np.array([1,2,3,255])
-items = []
+n = 120
+t0, frames, t = 0,0,0
 
-def imshow(X, cmap=None, norm=None, aspect=None, interpolation=None,
-           alpha=1.0, vmin=None, vmax=None, origin=None, extent=None,
-           **kwargs):
-
-    '''pylab imshow proxy function.
-
-       This function first call the pylab original imshow function using an
-       alpha level of 0 (fully transparent). It then set axes background with a
-       dedicated 'transparent' color that will be replaced later by a truly
-       transparent color.
-
-       Warning: any pixel with 'transparent' color will be replaced by a
-                transparent pixel. If this causes problem, you will have to
-                change the definition of 'transparent' to something else.
-    '''
-    axis = plt.imshow(X, cmap=cmap, norm=norm, aspect=aspect,
-                      interpolation='nearest', alpha=0, vmin=vmin,
-                      vmax=vmax, origin=origin, extent=extent, **kwargs)
-    r,g,b,a = transparent/255.0
-    cmap = axis.cmap
-    under = cmap(-1.0)
-    over = cmap(2.0)
-    axis.cmap.set_over((r,g,b), alpha=0)
-    axis.cmap.set_under((r,g,b), alpha=0)
-    axis.cmap.set_bad((r,g,b), alpha=0)
-    axes = axis.get_axes()
-    axes.patch.set_facecolor((r,g,b))
-    axes.patch.set_alpha(a)
-
-    # Build glumpy colormap from matplotlib colormap
-    colors=[]
-    for i in range(510):
-        colors.append((i/510.0, cmap(i/510.0, alpha=alpha)))
-    cmap = glumpy.colormap.Colormap(*colors, over=glumpy.Color(over), under=glumpy.Color(under))
-    image = glumpy.Image(X,interpolation=interpolation, cmap=cmap, vmin=vmin, vmax=vmax)
-    image.update()
-    items.append ([image,axis,alpha])
-    return axis
-
-
-def show(interpolation='nearest'):
-    ''' pylab show proxy function. '''
-
-    # Draw current figure to rgba buffer
-    fig = plt.gcf()
-    fig.canvas.draw()
-    buffer = fig.canvas.buffer_rgba(0,0)
-    x,y,w,h = fig.bbox.bounds
-    F = np.fromstring(buffer,np.uint8)
-    F.shape = h,w,4
-
-    # Replace 'transparent' color with a real transparent color
-    v = np.array(transparent,dtype=np.uint8).view(dtype=np.int32)[0]
-    Ft = np.where(F.view(dtype=np.int32) == v, 0, F)
-
-    # Create main frame 
-    frame = glumpy.Image(Ft,interpolation=interpolation)
-    frame.update()
-
-    window = pyglet.window.Window(frame.shape[1], frame.shape[0],
-                                  vsync=0, resizable=True)
-    gl.glEnable(gl.GL_BLEND)
-    gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-    fps_display = pyglet.clock.ClockDisplay()
-
-    @window.event
-    def on_draw():
-        window.clear()
-        gl.glClearColor(1,1,1,1)
-        for image,axis,alpha in items:
-            x,y,w,h = axis.get_axes().bbox.bounds
-            x /= float(frame.shape[1])
-            y /= float(frame.shape[0])
-            w /= float(frame.shape[1])
-            h /= float(frame.shape[0])
-            gl.glColor4f(1,1,1,alpha)
-            image.blit(x*window.width,y*window.height,
-                       w*window.width,h*window.height)
-        gl.glColor4f(1,1,1,1)
-        frame.blit(0,0,window.width, window.height)
-        fps_display.draw()
-
-    @window.event
-    def on_key_press(symbol, modifiers):
-        if symbol == pyglet.window.key.ESCAPE:
-            if window.width == frame.shape[1] and window.height == frame.shape[0]:
-                pyglet.app.exit()
-            else:
-                window.set_size(frame.shape[1], frame.shape[0])
-            return True
-    pyglet.app.run()
-
-
-n = 120.0
-X = np.empty((n,n), dtype=np.float32)
-X.flat = np.arange(n)*2*np.pi/n
-Y = np.empty((n,n), dtype=np.float32)
-Y.flat = np.arange(n)*2*np.pi/n
-Y = np.transpose(Y)
-Z = np.sin(X) + np.cos(Y)
-
+X = numpy.empty((n,n), dtype=numpy.float32)
+X.flat = numpy.arange(n)*2*numpy.pi/n
+Y = numpy.empty((n,n), dtype=numpy.float32)
+Y.flat = numpy.arange(n)*2*numpy.pi/n
+Y = numpy.transpose(Y)
+Z = numpy.sin(X) + numpy.cos(Y)
 fig = plt.figure(figsize=(7,7))
-
-print fig.canvas
-
 plt.suptitle('''Generated using matplotlib,\n'''
              '''Displayed using glumpy !''', fontsize=16)
 ax = plt.subplot(111)
-ax = imshow(Z, origin='lower', interpolation='nearest')
+ax = imshow(Z, origin='upper', interpolation='nearest', cmap=plt.cm.hot)
 plt.grid()
-def update(dt):
-    global X,Y
-    X += np.pi/15
-    Y += np.pi/20
-    for image,axis,alpha in items:
-        image.Z[...] = np.sin(X) + np.cos(Y)
-        image.update()
-pyglet.clock.schedule(update)
 show()
+
+window = glumpy.active_window()
+
+@window.event
+def on_idle(dt):
+    global X, Y, t, t0, frames
+
+    t += dt
+    frames = frames + 1
+    if t-t0 > 5.0:
+        fps = float(frames)/(t-t0)
+        print 'FPS: %.2f (%d frames in %.2f seconds)' % (fps, frames, t-t0)
+        frames,t0 = 0, t
+
+    X += numpy.pi/15
+    Y += numpy.pi/20
+    for image, axis, alpha in items:
+        image.Z[...] = numpy.sin(X) + numpy.cos(Y)
+        image.update()
+    window.draw()
+
+window.mainloop()
+
+
+
 

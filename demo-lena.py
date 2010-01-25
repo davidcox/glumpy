@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -20,17 +20,15 @@
 #
 # -----------------------------------------------------------------------------
 from PIL import Image
-import numpy
-import pyglet
-import glumpy
+import numpy, glumpy
 
-window = pyglet.window.Window(512,512)
+window = glumpy.Window(512,512)
 Z = numpy.asarray(Image.open('lena.png'))
 I = glumpy.Image(Z, interpolation='bicubic')
 
 @window.event
 def on_draw():
     window.clear()
-    I.blit(0, 0, window.width, window.height)
+    I.blit(0,0,window.width,window.height)
 
-pyglet.app.run()
+window.mainloop()

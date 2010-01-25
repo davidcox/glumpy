@@ -1,38 +1,31 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
-# Copyright (c) 2009 Nicolas Rougier
-# All rights reserved.
-# 
-# Redistribution  and  use  in  source   and  binary  forms,  with  or  without
-# modification, are permitted provided that the following conditions are met:
+# glumpy - Fast OpenGL numpy visualization
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
-#  * Redistributions  of source code  must retain  the above  copyright notice,
-#    this list of conditions and the following disclaimer.
-#  * Redistributions in binary form  must reproduce the above copyright notice,
-#    this list of conditions and  the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#  * Neither the name of Nicolas Rougier  nor the names of its contributors may
-#    be used to endorse or  promote products derived from this software without
-#    specific prior written permission.
+# This file is part of glumpy.
 #
-# THIS SOFTWARE IS  PROVIDED BY THE COPYRIGHT HOLDERS  AND CONTRIBUTORS "AS IS"
-# AND ANY  EXPRESS OR  IMPLIED WARRANTIES, INCLUDING,  BUT NOT LIMITED  TO, THE
-# IMPLIED WARRANTIES  OF MERCHANTABILITY AND  FITNESS FOR A  PARTICULAR PURPOSE
-# ARE  DISCLAIMED. IN NO  EVENT SHALL  THE COPYRIGHT  OWNER OR  CONTRIBUTORS BE
-# LIABLE  FOR   ANY  DIRECT,  INDIRECT,  INCIDENTAL,   SPECIAL,  EXEMPLARY,  OR
-# CONSEQUENTIAL  DAMAGES  (INCLUDING,  BUT   NOT  LIMITED  TO,  PROCUREMENT  OF
-# SUBSTITUTE  GOODS OR SERVICES;  LOSS OF  USE, DATA,  OR PROFITS;  OR BUSINESS
-# INTERRUPTION)  HOWEVER CAUSED  AND ON  ANY  THEORY OF  LIABILITY, WHETHER  IN
-# CONTRACT,  STRICT  LIABILITY, OR  TORT  (INCLUDING  NEGLIGENCE OR  OTHERWISE)
-# ARISING IN ANY  WAY OUT OF THE USE  OF THIS SOFTWARE, EVEN IF  ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
+# glumpy is free  software: you can redistribute it and/or  modify it under the
+# terms of  the GNU General  Public License as  published by the  Free Software
+# Foundation, either  version 3 of the  License, or (at your  option) any later
+# version.
+#
+# glumpy is  distributed in the  hope that it  will be useful, but  WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy  of the GNU General Public License along with
+# glumpy. If not, see <http://www.gnu.org/licenses/>.
+#
 # -----------------------------------------------------------------------------
 ''' Texture object.
 
     A texture is an image loaded into video memory that can be efficiently
     drawn to the framebuffer.
 '''
-import numpy as np
-import pyglet.gl as gl
+import numpy
+import OpenGL.GL as gl
 
 
 class TextureException(Exception):
@@ -68,9 +61,8 @@ class Texture(object):
 
 
     def __del__(self):
-        if self._id:
-            gl.glDeleteTextures(1, gl.byref(self._id))
-
+        if self._id and gl.glDeleteTextures:
+            gl.glDeleteTextures([self._id,])
 
 
     @property
@@ -80,7 +72,6 @@ class Texture(object):
         :type: int, read-only
         '''
         return self._target
-
 
     
     @property
@@ -109,7 +100,8 @@ class Texture(object):
 
         :type: int, read-only
         '''
-        return self._id.value
+        #return self._id.value
+        return self._id
 
 
 
@@ -145,11 +137,11 @@ class Texture(object):
 
         # Check data type
         dtype = Z.dtype
-        if dtype not in [np.float32, np.uint8]:
+        if dtype not in [numpy.float32, numpy.uint8]:
             raise TextureException('Array data type must be float32 or uint8.')
-        if dtype == np.float32:
+        if dtype == numpy.float32:
             self.src_type = gl.GL_FLOAT
-        elif dtype == np.uint8:
+        elif dtype == numpy.uint8:
             self.src_type = gl.GL_UNSIGNED_BYTE
 
         # Find shape & format
@@ -211,10 +203,11 @@ class Texture(object):
         self._height = height
 
         if self._id:
-            gl.glDeleteTextures(1, gl.byref(self._id))
-        id = gl.GLuint()
-        gl.glGenTextures(1, gl.byref(id))
-        self._id = id
+            #gl.glDeleteTextures(1, gl.byref(self._id))
+            gl.glDeleteTextures([self._id])
+        #id = gl.GLuint()
+        #gl.glGenTextures(1, gl.byref(id))
+        self._id = gl.glGenTextures(1)
         gl.glPixelStorei (gl.GL_UNPACK_ALIGNMENT, 1)
         gl.glPixelStorei (gl.GL_PACK_ALIGNMENT, 1)
         gl.glBindTexture (self.target, self.id)
@@ -226,10 +219,10 @@ class Texture(object):
         gl.glTexParameterf (self.target, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP)
         if self._target == gl.GL_TEXTURE_1D:
             gl.glTexImage1D (self.target, 0, self.dst_format, width, 0,
-                             self.src_format, self.src_type, 0)
+                             self.src_format, self.src_type, numpy.zeros(Z.shape,Z.dtype))
         else:
             gl.glTexImage2D (self.target, 0, self.dst_format, width, height, 0,
-                             self.src_format, self.src_type, 0)
+                             self.src_format, self.src_type, numpy.zeros(Z.shape,Z.dtype))
         self.update()
 
 
@@ -247,14 +240,14 @@ class Texture(object):
                                 self._Z.shape[0],
                                 self.src_format,
                                 self.src_type,
-                                self._Z.ctypes.data)
+                                self._Z) #.ctypes.data)
         else:
             gl.glTexSubImage2D (self.target, 0, 0, 0,
                                 self._Z.shape[1],
                                 self._Z.shape[0],
                                 self.src_format,
                                 self.src_type,
-                                self._Z.ctypes.data)
+                                self._Z) #.ctypes.data)
         if self.target == gl.GL_TEXTURE_2D and self.src_type == gl.GL_FLOAT:
            # Default parameters
            gl.glPixelTransferf(gl.GL_ALPHA_SCALE, 1)

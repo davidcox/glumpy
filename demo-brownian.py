@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -19,10 +19,7 @@
 # glumpy. If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------
-import numpy
-import pyglet
-pyglet.options['debug_gl'] = False
-import glumpy
+import numpy, glumpy
 
 n = 256
 Z = numpy.random.randint(-1,2,(n,n)).astype(numpy.float32)
@@ -32,7 +29,7 @@ P['x'] = numpy.random.randint(0,n,P.shape)
 P['y'] = numpy.random.randint(0,n,P.shape)
 P['c'] = numpy.random.random(P.shape)*2-1
 
-window = pyglet.window.Window(512, 512, vsync=0)
+window = glumpy.Window(512, 512)
 I = glumpy.Image(Z, interpolation='bicubic', cmap=glumpy.colormap.Hot, vmin=-1, vmax=1)
 
 
@@ -41,7 +38,8 @@ def on_draw():
     window.clear()
     I.blit(0,0,window.width,window.height)
 
-def update(dt):
+@window.event
+def on_idle(dt):
     global N,P,Z
     P['x'] += (numpy.random.randint(0,3,P.size)-1)
     P['y'] += (numpy.random.randint(0,3,P.size)-1)
@@ -60,6 +58,6 @@ def update(dt):
     N /= 8.0
     Z[...] = 0.5*Z+ 0.5*N
     I.update()
+    window.draw()
 
-pyglet.clock.schedule(update)
-pyglet.app.run()
+window.mainloop()

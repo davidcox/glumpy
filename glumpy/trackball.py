@@ -83,7 +83,7 @@ __docformat__ = 'restructuredtext'
 __version__ = '1.0'
 
 import math
-from pyglet.gl import GLfloat
+from OpenGL.GL import GLfloat
 
 
 # Some useful functions on vectors

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -19,11 +19,9 @@
 # glumpy. If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------
-import numpy
-import pyglet
-import glumpy
+import numpy, glumpy
 
-window = pyglet.window.Window(512, 512, resizable=True)
+window = glumpy.Window(512, 512)
 Z = numpy.random.random((128,128)).astype(numpy.float32)
 I = glumpy.Image(Z, interpolation='bicubic', cmap=glumpy.colormap.Grey)
 viewport = [0,0,1]
@@ -37,6 +35,7 @@ def on_mouse_motion(x, y, dx, dy):
     y = min(max(y,0),1)
     viewport[0] = x*window.width*(1-zoom)
     viewport[1] = y*window.height*(1-zoom)
+    window.draw()
 
 @window.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
@@ -53,4 +52,6 @@ def on_draw():
     window.clear()
     x,y,s = viewport
     I.blit(x, y, s*window.width, s*window.height)
-pyglet.app.run()
+
+window.mainloop()
+

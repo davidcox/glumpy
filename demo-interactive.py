@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -19,32 +19,25 @@
 # glumpy. If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------
-import numpy
-import pyglet
-import glumpy
+import sys
+import numpy, glumpy
+from OpenGL.GL import *
 
+window = glumpy.Window(512,512)
+Z = numpy.random.random((32,32)).astype(numpy.float32)
+_I = glumpy.Image(Z, interpolation='nearest', cmap=glumpy.colormap.Grey)
 
-def func3(x,y):
-    return (1-x/2+x**5+y**3)*numpy.exp(-x**2-y**2)
-dx, dy = .1, .1
-x = numpy.arange(-3.0, 3.0, dx, dtype=numpy.float32)
-y = numpy.arange(-3.0, 3.0, dy, dtype=numpy.float32)
-X,Y = numpy.meshgrid(x, y)
-Z = func3(X, Y)
-
-_window = pyglet.window.Window(512,512)
-_I = glumpy.Image(Z,interpolation='nearest', cmap=glumpy.colormap.IceAndFire)
-
-@_window.event
-def on_draw():
-    _window.clear()
-    _I.blit(0,0,_window.width,_window.height)
-
-def update(dt):
+@window.timer(30.0)
+def draw(dt):
+    window.clear()
     _I.update()
-pyglet.clock.schedule_interval(update, 1./60)
+    _I.blit(0,0,window.width,window.height)
+    window.draw()
 
-window = glumpy.proxy(_window)
-I = glumpy.proxy(_I)
-glumpy.app.run(locals())
+@window.event
+def on_key_press(key, modifiers):
+    if key == glumpy.key.ESCAPE:
+        sys.exit()
 
+I = glumpy.Proxy(_I,window)
+window.mainloop(interactive=True, namespace=locals())

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -20,7 +20,7 @@
 #
 # -----------------------------------------------------------------------------
 import numpy as np
-import pyglet, pyglet.gl as gl
+import OpenGL.GL as gl
 import texture, shader, colormap, color
 
 class Image(object):

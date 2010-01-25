@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -19,49 +19,48 @@
 # glumpy. If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------
-import pyglet
-pyglet.options['debug_gl'] = False
-import pyglet.gl as gl
-import pyglet
-import numpy as np
-import glumpy
-
+import numpy, glumpy
+from glumpy.pylab import *
+import matplotlib.pyplot as plt
 
 class Mesh(object):
     def __init__(self, n=64):
-        indices, vertices, texcoords = [], [], []
+        self.indices  = numpy.zeros((n-1,n-1,4), dtype=numpy.float32)
+        self.vertices = numpy.zeros((n,n,3), dtype=numpy.float32)
+        self.texcoords= numpy.zeros((n,n,2), dtype=numpy.float32)
         for xi in range(n):
             for yi in range(n):
                 x,y,z = xi/float(n-1), yi/float(n-1), 0
-                vertices  += [x-0.5,y-0.5,z]
-                texcoords += [x,y]
+                self.vertices[xi,yi] =  x-0.5,y-0.5,z
+                self.texcoords[xi,yi] = x,y
         for yi in range(n-1):
             for xi in range(n-1):
                 i = yi*n + xi
-                indices += [i,i+1,i+n+1,i+n]
-        self.vlist = pyglet.graphics.vertex_list_indexed(n*n, indices,
-                                                         ('v3f', vertices),
-                                                         ('t2f', texcoords))
+                self.indices[xi,yi] = i,i+1,i+n+1,i+n
     def draw(self):
-        self.vlist.draw(gl.GL_QUADS)
+        gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
+        gl.glEnableClientState(gl.GL_TEXTURE_COORD_ARRAY);
+        gl.glVertexPointerf(self.vertices)
+        gl.glTexCoordPointerf(self.texcoords)
+        gl.glDrawElementsus(gl.GL_QUADS, self.indices)
+        gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
+        gl.glDisableClientState(gl.GL_TEXTURE_COORD_ARRAY);
 
 
 
 if __name__ == '__main__':
 
-    window = pyglet.window.Window(width=800,height=600,
-                                  vsync=0,resizable=True, visible=False)
+    window = glumpy.Window(800,600)
     trackball = glumpy.Trackball(60,30,1.1)
     mesh = Mesh(64)
 
     def func3(x,y):
-        return np.sin(x*x+y*y)*np.cos(x+y*y)*np.sin(y) 
-    #return (1-x/2+x**5+y**3)*np.exp(-x**2-y**2)
+        return numpy.sin(x*x+y*y)*numpy.cos(x+y*y)*numpy.sin(y) 
+    #return (1-x/2+x**5+y**3)*numpy.exp(-x**2-y**2)
     dx, dy = .05, .05
-    x = np.arange(-4.0, 4.0, dx, dtype=np.float32)
-    y = np.arange(-4.0, 4.0, dy, dtype=np.float32)
-    Z = func3(*np.meshgrid(x, y))
-
+    x = numpy.arange(-4.0, 4.0, dx, dtype=numpy.float32)
+    y = numpy.arange(-4.0, 4.0, dy, dtype=numpy.float32)
+    Z = func3(*numpy.meshgrid(x, y))
     I = glumpy.Image(Z, interpolation='bilinear',
                      cmap=glumpy.colormap.Hot, displace=True)
    
@@ -73,7 +72,7 @@ if __name__ == '__main__':
         gl.glPushMatrix()
         gl.glLoadIdentity()
         angle = 15+105*(trackball.zoom-1)
-        gl.gluPerspective(angle, window.width / float(window.height), .1, 1000)
+        glu.gluPerspective(angle, window.width / float(window.height), .1, 1000)
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glPushMatrix()
         gl.glLoadIdentity()
@@ -106,24 +105,22 @@ if __name__ == '__main__':
         gl.glPopMatrix()
 
         gl.glPolygonMode (gl.GL_FRONT_AND_BACK, gl.GL_FILL)
-        fps_display.draw()
+
 
     @window.event
-    def on_mouse_drag(x, y, dx, dy, button, modifiers):
+    def on_mouse_drag(x, y, dx, dy, button):
         ''' Computes new rotation according to mouse drag '''
         x  = (x*2.0 - window.width)/float(window.width)
         dx = 2*dx/float(window.width)
         y  = (y*2.0 - window.height)/float(window.height)
         dy = 2*dy/float(window.height)
         trackball.drag_to(x,y,dx,dy)
-        return True
+        window.draw()
 
     @window.event
     def on_mouse_scroll(x, y, dx, dy):
         ''' Computes new zoom according to mouse scroll '''
         trackball.zoom_to(x,y,dx,dy)
-        return True
+        window.draw()
 
-    fps_display = pyglet.clock.ClockDisplay()
-    window.set_visible(True)
-    pyglet.app.run()
+    window.mainloop()

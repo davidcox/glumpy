@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -19,19 +19,15 @@
 # glumpy. If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------
-import numpy
-import pyglet
-pyglet.options['debug_gl'] = False
-import pyglet.gl as gl
-import glumpy
+import numpy, glumpy
+import OpenGL.GL as gl
 
 n = 512
 Z = numpy.random.randint(0,2,(n,n)).astype(numpy.float32)
-window = pyglet.window.Window(512, 512, vsync=0)
+window = glumpy.Window(512, 512)
 viewport = [0,0,1]
 Zi = glumpy.Image(Z, interpolation='nearest', cmap=glumpy.colormap.Grey,
                   vmin=1, vmax=0)
-fps_display = pyglet.clock.ClockDisplay()
 gl.glEnable(gl.GL_BLEND)
 gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
@@ -60,9 +56,9 @@ def on_draw():
     window.clear()
     x,y,s = viewport
     Zi.blit(x, y, s*window.width, s*window.height)
-    fps_display.draw()
 
-def update(dt):
+@window.event
+def on_idle(dt):
     # Code by Tom Wright
     # http://tat.wright.name/game-of-life/game-of-life.py
     N = numpy.zeros(Z.shape)
@@ -76,6 +72,6 @@ def update(dt):
     N[:, 1:] += Z[:, :-1]
     Z[...] = ((Z == 1) & (N < 4) & (N > 1)) | ((Z == 0) & (N == 3))
     Zi.update()
+    window.draw()
 
-pyglet.clock.schedule(update)
-pyglet.app.run()
+window.mainloop()

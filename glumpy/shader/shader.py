@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -45,7 +45,7 @@
     shader.unbind()
 '''
 import os, sys
-import pyglet.gl as gl
+import OpenGL.GL as gl
 import ctypes
 
 class Shader:
@@ -79,30 +79,19 @@ class Shader:
         # create the shader handle
         shader = gl.glCreateShader(type)
 
-        # convert the source strings into a ctypes pointer-to-char array, and upload them
-        # this is deep, dark, dangerous black magick - don't try stuff like this at home!
-        src = (ctypes.c_char_p * count)(*strings)
-        gl.glShaderSource(shader, count,
-                          ctypes.cast(ctypes.pointer(src),
-                                      ctypes.POINTER(ctypes.POINTER(ctypes.c_char))), None)
+        # Upload shader code
+        gl.glShaderSource(shader, strings)
 
         # compile the shader
         gl.glCompileShader(shader)
 
-        temp = ctypes.c_int(0)
         # retrieve the compile status
-        gl.glGetShaderiv(shader, gl.GL_COMPILE_STATUS, ctypes.byref(temp))
+        status = gl.glGetShaderiv(shader, gl.GL_COMPILE_STATUS)
 
         # if compilation failed, print the log
-        if not temp:
-            # retrieve the log length
-            gl.glGetShaderiv(shader, gl.GL_INFO_LOG_LENGTH, ctypes.byref(temp))
-            # create a buffer for the log
-            buffer = ctypes.create_string_buffer(temp.value)
-            # retrieve the log text
-            gl.glGetShaderInfoLog(shader, temp, None, buffer)
-            # print the log to the console
-            print buffer.value
+        if not status:
+            # display the log
+            print gl.glGetShaderInfoLog(shader)
         else:
             # all is well, so attach the shader to the program
             gl.glAttachShader(self.handle, shader);
@@ -120,11 +109,11 @@ class Shader:
             # retrieve the log length
             gl.glGetProgramiv(self.handle, gl.GL_INFO_LOG_LENGTH, ctypes.byref(temp))
             # create a buffer for the log
-            buffer = ctypes.create_string_buffer(temp.value)
+            #buffer = ctypes.create_string_buffer(temp.value)
             # retrieve the log text
-            gl.glGetProgramInfoLog(self.handle, temp, None, buffer)
+            log = gl.glGetProgramInfoLog(self.handle) #, temp, None, buffer)
             # print the log to the console
-            print buffer.value
+            print log
         else:
             # all is well, so we are linked
             self.linked = True

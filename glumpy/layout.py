@@ -1,10 +1,23 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# -----------------------------------------------------------------------------
-# Copyright (c) 2009 Nicolas Rougier <Nicolas.Rougier@loria.fr>
+# ------------------------------------------------------------------------------
+# glumpy - Fast OpenGL numpy visualization
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
-# Distributed under  the terms of the BSD  License. The full license  is in the
-# file file COPYING, distributed as part of this software.
+# This file is part of glumpy.
+#
+# glumpy is free  software: you can redistribute it and/or  modify it under the
+# terms of  the GNU General  Public License as  published by the  Free Software
+# Foundation, either  version 3 of the  License, or (at your  option) any later
+# version.
+#
+# glumpy is  distributed in the  hope that it  will be useful, but  WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy  of the GNU General Public License along with
+# glumpy. If not, see <http://www.gnu.org/licenses/>.
+#
 # -----------------------------------------------------------------------------
 '''
 
@@ -198,49 +211,3 @@ def layout(obj, padding=1, border=(1,1,1,1), origin = 'lower'):
 
 
 
-if __name__ == '__main__':
-    import pyglet
-    import pyglet.gl as gl
-
-    A = numpy.ones((100,100))
-    B = numpy.ones((50,50))
-    C = numpy.ones((30,30))
-    shape, items = layout([ [ (A,1.05),  '-'],
-                            [ (C,5/3.),  B ] ], padding=5, border = 5)
-
-    shape = .999*shape[0],.999*shape[1]
-    w,h = int(shape[0]*600), int(shape[1]*600)
-    window = pyglet.window.Window(width=w, height=h)
-
-    objects = []
-    for item in items:
-        Z,x,y,w,h = item
-        x,y = x*600*shape[0],   y*600*shape[1]
-        w,h = w*600*shape[0]-1, h*600*shape[1]+1
-        label = pyglet.text.Label(text='%dx%d' % (Z.shape[0],Z.shape[1]))
-        label.font_size = 24
-        label.anchor_x='center'
-        label.anchor_y='center'
-        label.x = x + w/2.0
-        label.y = y + h/2.0
-        objects.append( (Z,label,x,y,w,h))
-
-    @window.event
-    def on_draw():
-        window.clear()
-        gl.glDepthMask(gl.GL_FALSE)
-        gl.glPushMatrix()
-        gl.glTranslatef(0.45,0.45,0.0)
-        for obj in objects:
-            Z,label,x,y,w,h = obj
-            gl.glBegin(gl.GL_LINE_LOOP)
-            gl.glVertex2f(x,   y)
-            gl.glVertex2f(x,   y+h)
-            gl.glVertex2f(x+w, y+h)
-            gl.glVertex2f(x+w, y)
-            gl.glEnd()
-            label.draw()
-        gl.glPopMatrix()
-        gl.glDepthMask(gl.GL_TRUE)
-
-    pyglet.app.run()

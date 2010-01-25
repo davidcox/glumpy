@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -19,16 +19,15 @@
 # glumpy. If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------
-import numpy
-import pyglet
-import glumpy
+import numpy, glumpy
 
-window = pyglet.window.Window(512, 512, resizable=True)
+window = glumpy.Window(512,512)
 Z = numpy.random.random((32,32)).astype(numpy.float32)
 I = glumpy.Image(Z, interpolation='nearest', cmap=glumpy.colormap.Grey)
 
 @window.event
 def on_draw():
     window.clear()
-    I.blit(0, 0, window.width, window.height)
-pyglet.app.run()
+    I.blit(0,0,window.width,window.height)
+
+window.mainloop()

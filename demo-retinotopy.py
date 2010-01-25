@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -20,14 +20,14 @@
 #
 # -----------------------------------------------------------------------------
 from PIL import Image
-import numpy as np
-import pyglet, pyglet.gl as gl
-import glumpy
+import numpy, glumpy
+import OpenGL.GL as gl
+import OpenGL.GLUT as glut
 
 def cartesian(rho, theta):
     ''' Polar to cartesian coordinates. '''
-    x = rho*np.cos(theta)
-    y = rho*np.sin(theta)
+    x = rho*numpy.cos(theta)
+    y = rho*numpy.sin(theta)
     return x,y
 
 def logpolar(rho, theta):
@@ -38,8 +38,8 @@ def logpolar(rho, theta):
     xmin, xmax = 0.0, 4.80743279742
     ymin, ymax = -2.76745559565, 2.76745559565
     rho = rho*90.0
-    x = Bx*np.log(np.sqrt(rho*rho+2*A*rho*np.cos(theta)+A*A)/A)
-    y = By*np.arctan(rho*np.sin(theta)/(rho*np.cos(theta)+A))
+    x = Bx*numpy.log(numpy.sqrt(rho*rho+2*A*rho*numpy.cos(theta)+A*A)/A)
+    y = By*numpy.arctan(rho*numpy.sin(theta)/(rho*numpy.cos(theta)+A))
     x = (x-xmin)/(xmax-xmin)
     y = (y-ymin)/(ymax-ymin)
     return x,y
@@ -48,20 +48,20 @@ def logpolar(rho, theta):
 def retinotopy(Rs,Ps):
     ''' '''
     s = 4
-    rho = ((np.logspace(start=0, stop=1, num=s*Rs[1],base=10)-1)/9.)
-    theta = np.linspace(start=-np.pi/2,stop=np.pi/2, num=s*Rs[0])
+    rho = ((numpy.logspace(start=0, stop=1, num=s*Rs[1],base=10)-1)/9.)
+    theta = numpy.linspace(start=-numpy.pi/2,stop=numpy.pi/2, num=s*Rs[0])
     rho = rho.reshape((s*Rs[1],1))
-    rho = np.repeat(rho,s*Rs[0], axis=1)
+    rho = numpy.repeat(rho,s*Rs[0], axis=1)
     theta = theta.reshape((1,s*Rs[0]))
-    theta = np.repeat(theta,s*Rs[1], axis=0)
+    theta = numpy.repeat(theta,s*Rs[1], axis=0)
     y,x = cartesian(rho,theta)
     a,b = x.min(), x.max()
     x = (x-a)/(b-a)
     a,b = y.min(), y.max()
     y = (y-a)/(b-a)
 
-    Px = np.ones(Ps, dtype=int)*0
-    Py = np.ones(Ps, dtype=int)*0
+    Px = numpy.ones(Ps, dtype=int)*0
+    Py = numpy.ones(Ps, dtype=int)*0
 
     xi = (x*(Rs[0]-1)).astype(int)
     yi = ((0.5+0.5*y)*(Rs[1]-1)).astype(int)
@@ -110,13 +110,14 @@ def square(x,y,width,height):
 if __name__ == '__main__':
 
     image = Image.open('lena.png')
-    S = np.asarray(image, dtype=np.float32)/256. # Visual scene
-    R = np.zeros((256,256,3),dtype=np.float32)
-    V = np.zeros((256,256,3),dtype=np.float32)
+    S = numpy.asarray(image, dtype=numpy.float32)/256. # Visual scene
+    R = numpy.zeros((256,256,3),dtype=numpy.float32)
+    V = numpy.zeros((256,256,3),dtype=numpy.float32)
     Px,Py = retinotopy(R.shape[:2],V.shape[:2])
     X,Y = 0,0
 
-    window = pyglet.window.Window(S.shape[1]+2*V.shape[1], max(S.shape[0],2*V.shape[0]))
+    window = glumpy.Window(S.shape[1]+2*V.shape[1],
+                           max(S.shape[0],2*V.shape[0]))
     Si = glumpy.Image(S, cmap=glumpy.colormap.Grey)
     Vi = glumpy.Image(V, cmap=glumpy.colormap.Grey)
     gl.glBlendFunc (gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -125,9 +126,14 @@ if __name__ == '__main__':
     @window.event
     def on_mouse_motion(x, y, dx, dy):
         global X,Y
-        X = min(max(x-V.shape[1]//2,0), S.shape[1]-V.shape[1])
-        Y = min(max((window.height-y)-V.shape[0]//2,0), S.shape[0]-V.shape[0])
+        X = min(max(x-V.shape[1]//2,1), S.shape[1]-V.shape[1])
+        Y = min(max((window.height-y)-V.shape[0]//2,1), S.shape[0]-V.shape[0])
+
+        r,g,b = S[Y,X]
+        S[Y,X] = 0
         V[...] = S[Y+Px,X+Py]
+        S[Y,X] = r,g,b
+        window.draw()
 
     @window.event
     def on_draw():
@@ -140,4 +146,4 @@ if __name__ == '__main__':
         gl.glDisable(gl.GL_TEXTURE_2D)
         square(X,window.height-Y,256,-256)
 
-    pyglet.app.run()
+    window.mainloop()

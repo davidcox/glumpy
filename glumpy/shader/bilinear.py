@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -20,7 +20,7 @@
 #
 # -----------------------------------------------------------------------------
 from shader import Shader, read_shader
-import pyglet.gl as gl
+import OpenGL.GL as gl
 
 class Bilinear(Shader):
     def __init__(self, use_lut=False, displace=False):

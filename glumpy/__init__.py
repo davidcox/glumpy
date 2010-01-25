@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 # glumpy - Fast OpenGL numpy visualization
-# Copyright (c) 2009 - Nicolas P. Rougier
+# Copyright (c) 2009, 2010 - Nicolas P. Rougier
 #
 # This file is part of glumpy.
 #
@@ -19,11 +19,19 @@
 # glumpy. If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------
+import OpenGL.GL as gl
+import OpenGL.GLU as glu
+import OpenGL.GLUT as glut
+import pylab
 import colormap
+from proxy import Proxy
 from color import Color
-from texture import Texture
 from image import Image
-from trackball import Trackball
+from window import Window, active_window
 from layout import layout
-from app import app, proxy
+from texture import Texture
+from trackball import Trackball
+
+
+
 
