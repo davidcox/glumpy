@@ -66,7 +66,7 @@ class Image(object):
         self.origin = origin
         self.vmin = vmin
         self.vmax = vmax
-        self.Z = Z
+        self.data = Z
 
         # Source format is RGB or RGBA, no need of a colormap
         if self.texture.src_format in [gl.GL_RGB,gl.GL_RGBA]:
@@ -99,7 +99,7 @@ class Image(object):
     @property
     def shape(self):
         ''' Underlying array shape. '''
-        return self.Z.shape
+        return self.data.shape
 
     @property
     def format(self):
@@ -179,11 +179,11 @@ class Image(object):
     def update(self):
         ''' Data update. '''
         if self.vmin is None:
-            vmin = self.Z.min()
+            vmin = self.data.min()
         else:
             vmin = self.vmin
         if self.vmax is None:
-            vmax = self.Z.max()
+            vmax = self.data.max()
         else:
             vmax = self.vmax
         if self._lut:

@@ -56,7 +56,7 @@ def on_idle(dt):
     X += numpy.pi/15
     Y += numpy.pi/20
     for image, axis, alpha in items:
-        image.Z[...] = numpy.sin(X) + numpy.cos(Y)
+        image.data[...] = numpy.sin(X) + numpy.cos(Y)
         image.update()
     window.draw()
 
