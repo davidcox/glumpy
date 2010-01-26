@@ -5,7 +5,6 @@ from scipy.weave import converters
 Real-Time Fluid Dynamics for Games by Jos Stam (2003).
 Parts of author's work are also protected
 under U. S. patent #6,266,071 B1 [Patent].
-
 """
 
 def set_bnd(N, b, x):
