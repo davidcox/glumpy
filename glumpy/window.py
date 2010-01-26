@@ -13,6 +13,7 @@ import key, mouse, event, proxy
 import _ctypes
 import threading
 import IPython
+import termios
 
 # The one and only window
 _window = None
@@ -77,7 +78,7 @@ class Window(event.EventDispatcher, Singleton):
             glut.glutInitDisplayMode(glut.GLUT_DOUBLE |
                                      glut.GLUT_RGB    |
                                      glut.GLUT_DEPTH)
-            self._window_id = glut.glutCreateWindow(self._caption)       
+            self._window_id = glut.glutCreateWindow(self._caption)
         glut.glutDisplayFunc(self._display)
         glut.glutReshapeFunc(self._reshape)
         glut.glutKeyboardFunc(self._keyboard)
@@ -315,19 +316,32 @@ class Window(event.EventDispatcher, Singleton):
             sys.exit()
 
         # Starts interactive mode
+        # Save tty mode
+        self.term_state = termios.tcgetattr(sys.stdin)
         namespace = namespace.copy()
         for key in namespace.keys():
             f = namespace[key]
             if key[:2] == 'gl' and isinstance(namespace[key], _ctypes.CFuncPtr):
                 namespace[key] = proxy.Proxy(f,self)
         def session_start():
-            self.shell = IPython.ipapi.launch_new_instance(namespace)
+            self.shell = IPython.ipapi.make_session(namespace)
+            self.shell.IP.interact() #mainloop()
             sys.exit()
         self.session = threading.Thread(target=session_start)
         self.session.start()
+
+        import atexit
+        @atexit.register
+        def goodbye():
+            self.shell.IP.ask_exit()
+            # Restore tty state
+            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.term_state)
+            sys.stdout.write('\n')
+
         glut.glutTimerFunc(100, self._pop, 0)
-        while self.session.isAlive():
-            glut.glutMainLoop()
+        #while self.session.isAlive():
+        glut.glutMainLoop()
+        print "shell", self.shell
 
 
     def timer(self, *args):
