@@ -311,7 +311,7 @@ class Window(event.EventDispatcher, Singleton):
 
         # Starts non-interactive mode
         if not interactive:
-            glut.glutMainLoop()
+            glut.glutMainLoop()            
             sys.exit()
 
         # Starts interactive mode
@@ -321,7 +321,7 @@ class Window(event.EventDispatcher, Singleton):
             if key[:2] == 'gl' and isinstance(namespace[key], _ctypes.CFuncPtr):
                 namespace[key] = proxy.Proxy(f,self)
         def session_start():
-            IPython.ipapi.launch_new_instance(namespace)
+            self.shell = IPython.ipapi.launch_new_instance(namespace)
             sys.exit()
         self.session = threading.Thread(target=session_start)
         self.session.start()
