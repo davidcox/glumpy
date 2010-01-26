@@ -9,8 +9,6 @@
 import sys
 import numpy, glumpy
 import OpenGL.GL as gl
-import OpenGL.GLU as glu
-import OpenGL.GLUT as glut
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
