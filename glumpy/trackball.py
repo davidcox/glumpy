@@ -76,13 +76,12 @@ You can also set trackball orientation directly by setting theta and phi value
 expressed in degrees. Theta relates to the rotation angle around X axis while
 phi relates to the rotation angle around Z axis.
 
-
-:requires: pyglet 1.1
 '''
 __docformat__ = 'restructuredtext'
 __version__ = '1.0'
 
 import math
+import OpenGL.GL as gl
 from OpenGL.GL import GLfloat
 
 
@@ -150,11 +149,12 @@ def _q_rotmatrix(q):
 class Trackball(object):
     ''' Virtual trackball for 3D scene viewing. '''
 
-    def __init__(self, theta=0, phi=0, zoom=1):
+    def __init__(self, theta=0, phi=0, zoom=1, distance=3):
         ''' Build a new trackball with specified view '''
 
         self._rotation = [0,0,0,1]
         self.zoom = zoom
+        self.distance = distance
         self._count = 0
         self._matrix=None
         self._RENORMCOUNT = 97
@@ -162,9 +162,13 @@ class Trackball(object):
         self._set_orientation(theta,phi)
 
     def drag_to (self, x, y, dx, dy):
-        ''' Move trackball view from x,y to x+dx,y+dy.
-            Values must be normalized to the range [-1,1].
-        '''
+        ''' Move trackball view from x,y to x+dx,y+dy. '''
+        viewport = gl.glGetIntegerv(gl.GL_VIEWPORT)
+        width,height = float(viewport[2]), float(viewport[3])
+        x  = (x*2.0 - width)/width
+        dx = 2*dx/width
+        y  = (y*2.0 - height)/height
+        dy = 2*dy/height
         q = self._rotate(x,y,dx,dy)
         self._rotation = _q_add(q,self._rotation)
         self._count += 1
@@ -175,17 +179,37 @@ class Trackball(object):
         self._matrix = (GLfloat*len(m))(*m)
 
     def zoom_to (self, x, y, dx, dy):
-        ''' Zoom trackball by a factor dy
-            Values must be normalized to the range [-1,1].
-        '''
-        if dy > 0:
-            self._zoom *= 1.0/1.025
-        elif dy < 0:
-            self._zoom *= 1.025
-        if self._zoom < 1:
-            self._zoom = 1
-        if self._zoom > 2:
-            self._zoom = 2
+        ''' Zoom trackball by a factor dy '''
+        viewport = gl.glGetIntegerv(gl.GL_VIEWPORT)
+        height = float(viewport[3])
+        self.zoom = self.zoom-5*dy/height
+
+
+    def push(self):
+        viewport = gl.glGetIntegerv(gl.GL_VIEWPORT)
+        gl.glMatrixMode(gl.GL_PROJECTION)
+        gl.glPushMatrix()
+        gl.glLoadIdentity ()
+        aspect = viewport[2]/float(viewport[3])
+        aperture = 25.0
+        near = 0.1
+        far = 100.0
+        top = math.tan(aperture*3.14159/360.0) * near * self._zoom
+        bottom = -top
+        left = aspect * bottom
+        right = aspect * top
+        gl.glFrustum (left, right, bottom, top, near, far)
+        gl.glMatrixMode (gl.GL_MODELVIEW)
+        gl.glPushMatrix()
+        gl.glLoadIdentity ()
+        gl.glTranslate (0.0, 0, -self._distance)
+        gl.glMultMatrixf (self._matrix)
+
+    def pop(void):
+        gl.glMatrixMode(gl.GL_MODELVIEW)
+        gl.glPopMatrix()
+        gl.glMatrixMode(gl.GL_PROJECTION)
+        gl.glPopMatrix()
 
     def _get_matrix(self):
         return self._matrix
@@ -196,10 +220,18 @@ class Trackball(object):
         return self._zoom
     def _set_zoom(self, zoom):
         self._zoom = zoom
-        if self._zoom < 1: self._zoom = 1
-        if self._zoom > 2: self._zoom = 2
+        if self._zoom < .25: self._zoom = .25
+        if self._zoom > 10: self._zoom = 10
     zoom = property(_get_zoom, _set_zoom,
-                     doc='''Angle (in degrees) around the z axis''')
+                     doc='''Zoom factor''')
+
+    def _get_distance(self):
+        return self._distance
+    def _set_distance(self, distance):
+        self._distance = distance
+        if self._distance < 1: self._distance= 1
+    distance = property(_get_distance, _set_distance,
+                        doc='''Scene distance from point of view''')
 
     def _get_theta(self):
         self._theta, self._phi = self._get_orientation()
