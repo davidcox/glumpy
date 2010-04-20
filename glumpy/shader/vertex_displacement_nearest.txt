@@ -1,13 +1,13 @@
 /* -*- coding: utf-8 -*- */
-/* -----------------------------------------------------------------------------
+/* ----------------------------------------------------------------------------
  * Copyright (C) 2009-2010  Nicolas P. Rougier
  *
  * Distributed under the terms of the BSD License. The full license is in
  * the file COPYING, distributed as part of this software.
- * -----------------------------------------------------------------------------
+ * ----------------------------------------------------------------------------
  */
 /*
- * Disaplecement vertex shader
+ * Displacment vertex shader
  * ---------------------------
  */
 //#version 130
@@ -22,5 +22,6 @@ void main() {
     vec4 vertex = gl_Vertex;
     gl_TexCoord[0].xy = gl_MultiTexCoord0.xy;
     vertex.z += texture2D(texture,gl_MultiTexCoord0.xy).a;
+
     gl_Position = gl_ModelViewProjectionMatrix*vertex;         
 }

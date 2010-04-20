@@ -12,7 +12,6 @@ window = glumpy.Window(512,512)
 Z = numpy.random.random((32,32)).astype(numpy.float32)
 I = glumpy.Image(Z, interpolation='nearest', cmap=glumpy.colormap.Grey)
 
-
 @window.event
 def on_draw():
     window.clear()
