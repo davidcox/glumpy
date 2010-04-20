@@ -9,6 +9,7 @@
 import numpy, glumpy
 from glumpy.pylab import *
 import matplotlib.pyplot as plt
+import OpenGL.GLU as glu
 
 class Mesh(object):
     def __init__(self, n=64):
@@ -118,7 +119,7 @@ if __name__ == '__main__':
         trackball.zoom_to(x,y,dx,dy)
         window.draw()
 
-    @window.timer(30.0)
+    @window.timer(60.0)
     def update(dt):
         global X,Y
         X += numpy.pi/150.

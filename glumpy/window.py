@@ -13,7 +13,9 @@ import key, mouse, event, proxy
 import _ctypes
 import threading
 import IPython
-import termios
+
+if sys.platform in ['linux2', 'darwin']:
+    import termios
 
 # The one and only window
 _window = None
@@ -316,8 +318,9 @@ class Window(event.EventDispatcher, Singleton):
             sys.exit()
 
         # Starts interactive mode
-        # Save tty mode
-        self.term_state = termios.tcgetattr(sys.stdin)
+        # Save tty mode on linux/darwin
+        if sys.platform in ['linux2', 'darwin']:
+            self.term_state = termios.tcgetattr(sys.stdin)
         namespace = namespace.copy()
         for key in namespace.keys():
             f = namespace[key]
@@ -334,14 +337,12 @@ class Window(event.EventDispatcher, Singleton):
         @atexit.register
         def goodbye():
             self.shell.IP.ask_exit()
-            # Restore tty state
-            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.term_state)
+            # Restore tty state on linux/darwin
+            if sys.platform in ['linux2', 'darwin']:
+                termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.term_state)
             sys.stdout.write('\n')
-
         glut.glutTimerFunc(100, self._pop, 0)
-        #while self.session.isAlive():
         glut.glutMainLoop()
-        print "shell", self.shell
 
 
     def timer(self, *args):

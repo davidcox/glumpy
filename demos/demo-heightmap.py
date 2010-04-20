@@ -9,6 +9,7 @@
 import numpy, glumpy
 from glumpy.pylab import *
 import matplotlib.pyplot as plt
+import OpenGL.GLU as glu
 
 class Mesh(object):
     def __init__(self, n=64):
