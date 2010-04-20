@@ -7,9 +7,7 @@
 # the file COPYING, distributed as part of this software.
 #-----------------------------------------------------------------------------
 import numpy, glumpy
-from glumpy.pylab import *
-import matplotlib.pyplot as plt
-import OpenGL.GLU as glu
+import OpenGL.GL as gl
 
 class Mesh(object):
     def __init__(self, n=64):
@@ -56,16 +54,7 @@ if __name__ == '__main__':
     def on_draw():
         gl.glClearColor(1,1,1,1)
         window.clear()
-        gl.glMatrixMode(gl.GL_PROJECTION)
-        gl.glPushMatrix()
-        gl.glLoadIdentity()
-        angle = 15+105*(trackball.zoom-1)
-        glu.gluPerspective(angle, window.width / float(window.height), .1, 1000)
-        gl.glMatrixMode(gl.GL_MODELVIEW)
-        gl.glPushMatrix()
-        gl.glLoadIdentity()
-        gl.glTranslatef(0, 0, -3)
-        gl.glMultMatrixf(trackball.matrix)
+        trackball.push()
 
         gl.glEnable(gl.GL_DEPTH_TEST)
         gl.glEnable(gl.GL_BLEND)
@@ -74,7 +63,6 @@ if __name__ == '__main__':
         gl.glPolygonMode (gl.GL_FRONT_AND_BACK, gl.GL_FILL)
         gl.glEnable (gl.GL_POLYGON_OFFSET_FILL)
 
-        gl.glPushMatrix()
         gl.glScalef(1,1,0.25)
         gl.glTranslatef(0,0,-0.5)
         gl.glColor4f(1,1,1,1)
@@ -85,29 +73,16 @@ if __name__ == '__main__':
         gl.glColor4f(0,0,0,.25)
         mesh.draw()
         I.shader.unbind()
-        gl.glPopMatrix()
 
-        gl.glMatrixMode(gl.GL_PROJECTION)
-        gl.glPopMatrix()
-        gl.glMatrixMode(gl.GL_MODELVIEW)
-        gl.glPopMatrix()
-
-        gl.glPolygonMode (gl.GL_FRONT_AND_BACK, gl.GL_FILL)
-
+        trackball.pop()
 
     @window.event
     def on_mouse_drag(x, y, dx, dy, button):
-        ''' Computes new rotation according to mouse drag '''
-        x  = (x*2.0 - window.width)/float(window.width)
-        dx = 2*dx/float(window.width)
-        y  = (y*2.0 - window.height)/float(window.height)
-        dy = 2*dy/float(window.height)
         trackball.drag_to(x,y,dx,dy)
         window.draw()
 
     @window.event
     def on_mouse_scroll(x, y, dx, dy):
-        ''' Computes new zoom according to mouse scroll '''
         trackball.zoom_to(x,y,dx,dy)
         window.draw()
 
