@@ -7,6 +7,7 @@
 # the file COPYING, distributed as part of this software.
 # -----------------------------------------------------------------------------
 import sys, time
+import atexit
 import OpenGL.GL as gl
 import OpenGL.GLUT as glut
 import key, mouse, event, proxy
@@ -100,6 +101,10 @@ class Window(event.EventDispatcher, Singleton):
         else:
             glut.glutShowWindow()
         self.set_size(width,height)
+        screen_width = glut.glutGet(glut.GLUT_SCREEN_WIDTH)
+        screen_height= glut.glutGet(glut.GLUT_SCREEN_HEIGHT)
+        glut.glutPositionWindow((screen_width-width)//2,
+                                (screen_height-height)//2)
 
 
     def _keyboard(self, code, x, y):
@@ -312,9 +317,11 @@ class Window(event.EventDispatcher, Singleton):
             if 'on_idle' in item.keys():
                 glut.glutIdleFunc(self._idle)
 
+        self.dispatch_event('on_init')
+
         # Starts non-interactive mode
         if not interactive:
-            glut.glutMainLoop()            
+            glut.glutMainLoop()
             sys.exit()
 
         # Starts interactive mode
@@ -333,7 +340,6 @@ class Window(event.EventDispatcher, Singleton):
         self.session = threading.Thread(target=session_start)
         self.session.start()
 
-        import atexit
         @atexit.register
         def goodbye():
             self.shell.IP.ask_exit()
@@ -483,4 +489,5 @@ Window.register_event_type('on_show')
 Window.register_event_type('on_hide')
 Window.register_event_type('on_draw')
 Window.register_event_type('on_idle')
+Window.register_event_type('on_init')
 _window = Window(1,1,visible=False)
