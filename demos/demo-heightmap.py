@@ -39,19 +39,16 @@ if __name__ == '__main__':
 
     window = glumpy.Window(800,600)
     trackball = glumpy.Trackball(60,30,0.75)
-    mesh = Mesh(100)
-    White = glumpy.colormap.Colormap((0., (1.,1.,1.)), (1., (1.,1.,1.)))
+    mesh = Mesh(64)
 
     def func3(x,y):
-        #return numpy.sin(x*x+y*y)*numpy.cos(x+y*y)*numpy.sin(y) 
         return (1-x/2+x**5+y**3)*numpy.exp(-x**2-y**2)
     dx, dy = .05, .05
     x = numpy.arange(-3.0, 3.0, dx, dtype=numpy.float32)
     y = numpy.arange(-3.0, 3.0, dy, dtype=numpy.float32)
     Z = func3(*numpy.meshgrid(x, y))
-    I = glumpy.Image(Z, interpolation='bilinear', cmap=glumpy.colormap.Hot,
+    I = glumpy.Image(Z, interpolation='bicubic', cmap=glumpy.colormap.Hot,
                      lighted=True, grid=(32,32,0), height = 0.5)
-
     def draw_background():
         viewport = gl.glGetIntegerv(gl.GL_VIEWPORT)
         gl.glDisable (gl.GL_LIGHTING)
