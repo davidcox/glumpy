@@ -18,7 +18,3 @@ from window import Window, active_window
 from layout import layout
 from texture import Texture
 from trackball import Trackball
-
-
-
-

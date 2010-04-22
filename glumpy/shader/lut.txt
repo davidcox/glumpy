@@ -7,14 +7,11 @@
  * -----------------------------------------------------------------------------
  */
 /*
- * Standard vertex shader
- * ----------------------
+ * Lookup table fragment shader
+ * ----------------------------
  */
-//#version 130
-//precision highp float;
-//precision highp int;
-void main() {
-    gl_TexCoord[0] = gl_MultiTexCoord0;  
-    gl_FrontColor = gl_Color;
-    gl_Position = ftransform();
+vec4
+texture1D_lut (sampler1D LUT, float a)
+{
+    return texture1D(LUT, a);
 }

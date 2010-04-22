@@ -8,6 +8,7 @@
 #-----------------------------------------------------------------------------
 import numpy, glumpy
 import OpenGL.GL as gl
+import OpenGL.GLUT as glut
 
 class Mesh(object):
     def __init__(self, n=64):
@@ -37,44 +38,56 @@ class Mesh(object):
 if __name__ == '__main__':
 
     window = glumpy.Window(800,600)
-    trackball = glumpy.Trackball(60,30,1.1)
-    mesh = Mesh(64)
+    trackball = glumpy.Trackball(60,30,0.75)
+    mesh = Mesh(100)
+    White = glumpy.colormap.Colormap((0., (1.,1.,1.)), (1., (1.,1.,1.)))
 
     def func3(x,y):
-        return numpy.sin(x*x+y*y)*numpy.cos(x+y*y)*numpy.sin(y) 
-    #return (1-x/2+x**5+y**3)*numpy.exp(-x**2-y**2)
+        #return numpy.sin(x*x+y*y)*numpy.cos(x+y*y)*numpy.sin(y) 
+        return (1-x/2+x**5+y**3)*numpy.exp(-x**2-y**2)
     dx, dy = .05, .05
-    x = numpy.arange(-4.0, 4.0, dx, dtype=numpy.float32)
-    y = numpy.arange(-4.0, 4.0, dy, dtype=numpy.float32)
+    x = numpy.arange(-3.0, 3.0, dx, dtype=numpy.float32)
+    y = numpy.arange(-3.0, 3.0, dy, dtype=numpy.float32)
     Z = func3(*numpy.meshgrid(x, y))
-    I = glumpy.Image(Z, interpolation='bilinear',
-                     cmap=glumpy.colormap.Hot, displace=True)
-   
+    I = glumpy.Image(Z, interpolation='bilinear', cmap=glumpy.colormap.Hot,
+                     lighted=True, grid=(32,32,0), height = 0.5)
+
+    def draw_background():
+        viewport = gl.glGetIntegerv(gl.GL_VIEWPORT)
+        gl.glDisable (gl.GL_LIGHTING)
+        gl.glDisable (gl.GL_DEPTH_TEST)
+        gl.glPolygonMode (gl.GL_FRONT_AND_BACK, gl.GL_FILL)
+        gl.glBegin(gl.GL_QUADS)
+        gl.glColor(1.0,1.0,1.0)
+        gl.glVertex(0,0,-1)
+        gl.glVertex(viewport[2],0,-1)
+        gl.glColor(0.0,0.5,1.0)
+        gl.glVertex(viewport[2],viewport[3],0)
+        gl.glVertex(0,viewport[3],0)
+        gl.glEnd()
+
     @window.event
     def on_draw():
         gl.glClearColor(1,1,1,1)
         window.clear()
+        draw_background()
         trackball.push()
-
         gl.glEnable(gl.GL_DEPTH_TEST)
-        gl.glEnable(gl.GL_BLEND)
-        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        gl.glPolygonOffset (1.0, 1.0)
-        gl.glPolygonMode (gl.GL_FRONT_AND_BACK, gl.GL_FILL)
-        gl.glEnable (gl.GL_POLYGON_OFFSET_FILL)
-
-        gl.glScalef(1,1,0.25)
-        gl.glTranslatef(0,0,-0.5)
+#        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc (gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glTranslatef(0,0,-.25)
         gl.glColor4f(1,1,1,1)
         I.shader.bind(I.texture,I._lut)
         mesh.draw()
-        gl.glPolygonMode (gl.GL_FRONT_AND_BACK, gl.GL_LINE)
-        gl.glDisable (gl.GL_POLYGON_OFFSET_FILL)
-        gl.glColor4f(0,0,0,.25)
-        mesh.draw()
         I.shader.unbind()
-
         trackball.pop()
+
+    @window.event
+    def on_init():
+        gl.glLightfv (gl.GL_LIGHT0, gl.GL_DIFFUSE, (1.0, 1.0, 1.0, 1.0))
+        gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT, (0.1, 0.1, 0.1, 1.0))
+        gl.glLightfv (gl.GL_LIGHT0, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
+        gl.glLightfv (gl.GL_LIGHT0, gl.GL_POSITION,(2.0, 2.0, 2.0, 0.0))
 
     @window.event
     def on_mouse_drag(x, y, dx, dy, button):

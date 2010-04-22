@@ -1,0 +1,16 @@
+// Code to be included in fragment shader when light is needed
+float shininess = 2.5;
+vec4 ambient  = vec4(0.0);
+vec4 diffuse  = vec4(0.0);
+vec4 specular = vec4(0.0);
+// Computes normal
+float hx0 = interpolated_texture2D(texture, kernel,uv+vec2(+1.0,0.0)*pixel.x,pixel).a;
+float hx1 = interpolated_texture2D(texture, kernel,uv+vec2(-1.0,0.0)*pixel.x,pixel).a;
+float hy0 = interpolated_texture2D(texture, kernel,uv+vec2(0.0,+1.0)*pixel.y,pixel).a;
+float hy1 = interpolated_texture2D(texture, kernel,uv+vec2(0.0,-1.0)*pixel.y,pixel).a;
+vec3 dx = vec3(2.0*pixel.x,0.0,hx0-hx1);
+vec3 dy = vec3(0.0,2.0*pixel.y,hy0-hy1);
+vec3 normal = normalize(cross(dx,dy)); //*gl_NormalMatrix);
+calculateLighting(1, normal, vertex, shininess, ambient, diffuse, specular);
+color = gl_FrontLightModelProduct.sceneColor + (ambient + diffuse + specular) * color;
+color = clamp(color, 0.0, 1.0);

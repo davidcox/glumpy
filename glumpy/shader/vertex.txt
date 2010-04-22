@@ -7,20 +7,20 @@
  * -----------------------------------------------------------------------------
  */
 /*
- * Disaplecement vertex shader
+ * Displacement vertex shader
  * ---------------------------
  */
-//#version 130
-//precision highp float;
-//precision highp int;
-
 uniform sampler2D texture;
+uniform sampler1D kernel;
 uniform vec2 pixel;
+uniform float height;
+varying vec3 vertex;
 void main() {
-    gl_TexCoord[0] = gl_MultiTexCoord0;  
+//    gl_TexCoord[0] = gl_MultiTexCoord0;  
     gl_FrontColor = gl_Color;
-    vec4 vertex = gl_Vertex;
+    vec4 v = gl_Vertex;
     gl_TexCoord[0].xy = gl_MultiTexCoord0.xy;
-    vertex.z += texture2D_bilinear (texture, gl_MultiTexCoord0.xy, pixel).a;
-    gl_Position = gl_ModelViewProjectionMatrix*vertex;         
+    v.z += height*interpolated_texture2D (texture, kernel, gl_MultiTexCoord0.xy, pixel).a;
+    vertex = v.xyz;
+    gl_Position = gl_ModelViewProjectionMatrix*v;
 }

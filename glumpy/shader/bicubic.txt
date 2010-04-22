@@ -68,12 +68,7 @@
  */
 
 vec4
-cubic_filter(sampler1D kernel,
-             float x,
-             vec4 c0,
-             vec4 c1,
-             vec4 c2,
-             vec4 c3)
+cubic_filter(sampler1D kernel, float x, vec4 c0, vec4 c1, vec4 c2, vec4 c3)
 {
     vec4 h = texture1D(kernel, x);
     vec4 r = c0 * h.x; // f(x+1)
@@ -84,7 +79,7 @@ cubic_filter(sampler1D kernel,
 }
 
 vec4
-texture2D_bicubic (sampler2D texture, sampler1D kernel, vec2 uv, vec2 pixel)
+interpolated_texture2D (sampler2D texture, sampler1D kernel, vec2 uv, vec2 pixel)
 {
     vec2 texel = uv/pixel;
     vec2 f = fract(texel);

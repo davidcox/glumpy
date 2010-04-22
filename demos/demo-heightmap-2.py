@@ -38,7 +38,7 @@ class Mesh(object):
 if __name__ == '__main__':
 
     window = glumpy.Window(width=800,height=600)
-    trackball = glumpy.Trackball(60,30,1.1)
+    trackball = glumpy.Trackball(60,30,0.75)
     mesh = Mesh(32)
 
     # def func3(x,y):
@@ -48,14 +48,15 @@ if __name__ == '__main__':
     # y = numpy.arange(-3.0, 3.0, dy, dtype=numpy.float32)
     # Z = func3(*numpy.meshgrid(x, y))
 
-    n = 256.0
+    n = 64.0
     X = numpy.empty((n,n), dtype=numpy.float32)
-    X.flat = numpy.arange(n)*2*numpy.pi/n
+    X.flat = numpy.arange(n)*2*numpy.pi/n*2
     Y = numpy.empty((n,n), dtype=numpy.float32)
-    Y.flat = numpy.arange(n)*2*numpy.pi/n
+    Y.flat = numpy.arange(n)*2*numpy.pi/n*2
     Y = numpy.transpose(Y)
     Z = numpy.sin(X) + numpy.cos(Y)
-    I = glumpy.Image(Z, interpolation='nearest', cmap=glumpy.colormap.Hot, displace=True)
+    I = glumpy.Image(Z, interpolation='bilinear', cmap=glumpy.colormap.Hot,
+                     grid= (32.0,32.0,10.0), height=0.25)
 
 
     @window.event
@@ -63,25 +64,12 @@ if __name__ == '__main__':
         gl.glClearColor(1,1,1,1)
         window.clear()
         trackball.push()
-
         gl.glEnable(gl.GL_DEPTH_TEST)
-        gl.glEnable(gl.GL_BLEND)
-        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        gl.glPolygonOffset (1.0, 1.0)
-        gl.glPolygonMode (gl.GL_FRONT_AND_BACK, gl.GL_FILL)
-        gl.glEnable (gl.GL_POLYGON_OFFSET_FILL)
-
-        gl.glScalef(1,1,0.25)
-        gl.glTranslatef(0,0,-0.5)
+        gl.glTranslatef(0,0,-0.125)
         gl.glColor4f(1,1,1,1)
         I.shader.bind(I.texture,I._lut)
         mesh.draw()
-        gl.glPolygonMode (gl.GL_FRONT_AND_BACK, gl.GL_LINE)
-        gl.glDisable (gl.GL_POLYGON_OFFSET_FILL)
-        gl.glColor4f(0,0,0,.25)
-        mesh.draw()
         I.shader.unbind()
-
         trackball.pop()
 
     @window.event

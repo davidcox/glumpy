@@ -11,31 +11,27 @@ from shader import Shader, read_shader
 import OpenGL.GL as gl
 
 class Nearest(Shader):
-    def __init__(self, use_lut=False, displace=False):
-
-        if displace:
-            vert = read_shader('vertex_displacement_nearest.txt')
-        else:
-            vert = read_shader('vertex_standard.txt')
-
-        interpolation = read_shader('fragment_nearest.txt')
-        lut = read_shader('fragment_lut.txt')
+    def __init__(self, use_lut=False, lighted=False, grid=(0.0,0.0,0.0), height=0.0):
+        self._lighted = lighted
+        self._gridsize = grid
+        self._gridwidth = (1.0,1.0,1.0)
+        self._height = height
+        interpolation = read_shader('nearest.txt')
+        light         = read_shader('phong.txt')
+        lut           = read_shader('lut.txt')
+        vertex        = read_shader('vertex.txt')
+        fragment      = read_shader('fragment.txt')
+        lut_code = light_code = grid_code = ''
         if use_lut:
-            line = 'color = texture1D_lut(lut, color.a);'
-        else:
-            line = ''
-        frag = interpolation + lut + '''
-             uniform sampler2D texture;
-             uniform sampler1D lut;
-             uniform vec2 pixel;
-             void main() {
-                 vec2 uv = gl_TexCoord[0].xy;
-                 vec4 color = texture2D_nearest(texture, uv);
-                 %s
-                 gl_FragColor = color*gl_Color;
-             } ''' % line
-        Shader.__init__(self, vert = [vert], frag = [frag])
-
+            lut_code = 'color = texture1D_lut(lut, color.a);'
+        if lighted:
+            light_code = read_shader('light.txt')
+        if self._gridsize[0] or self._gridsize[1] or self._gridsize[2]:
+            grid_code = read_shader('grid.txt')
+        fragment  = fragment % (lut_code,grid_code,light_code)
+        Shader.__init__(self,
+          vert = [interpolation] + [vertex],
+          frag = [interpolation] + [light] + [lut] + [fragment])
 
     def bind(self, texture, lut=None):
         ''' Bind the program and relevant parameters '''
@@ -49,4 +45,7 @@ class Nearest(Shader):
         gl.glActiveTexture(gl.GL_TEXTURE0)
         gl.glBindTexture(texture.target, texture.id)
         self.uniformi('texture', 0)
+        self.uniformf('height', self._height)
         self.uniformf('pixel', 1.0/texture.width, 1.0/texture.height)
+        self.uniformf('gridsize', *self._gridsize)
+        self.uniformf('gridwidth', *self._gridwidth)

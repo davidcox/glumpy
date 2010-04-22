@@ -6,16 +6,13 @@
  * the file COPYING, distributed as part of this software.
  * -----------------------------------------------------------------------------
  */
+
 /*
- * Lookup table fragment shader
- * ----------------------------
+ * Nearest interpolation fragment shader
+ * -------------------------------------
  */
 vec4
-texture1D_lut (sampler1D LUT, float a)
+interpolated_texture2D (sampler2D texture, sampler1D kernel, vec2 uv, vec2 pixel)
 {
-    // if (isnan(a)) {
-    //     return vec4 (1.0,1.0,0.0,1.0);
-    // } else {
-    return texture1D(LUT, a);
-    // }
+    return texture2D(texture, uv);
 }

@@ -1,0 +1,5 @@
+// Code to be included in fragment wshader when grid is needed
+vec3 f  = abs(fract (vertex * gridsize)-0.5);
+vec3 df = fwidth(vertex * gridsize);
+vec3 g = smoothstep(-gridwidth*df,gridwidth*df , f);
+c = g.x * g.y * g.z;

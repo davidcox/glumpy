@@ -148,6 +148,7 @@ class Shader:
               # Retrieves uniform location, and set it
             }[len(vals)](loc, *vals)
 
+
     def uniform_matrixf(self, name, mat):
         ''' Upload uniform matrix, program must be currently bound. '''
 

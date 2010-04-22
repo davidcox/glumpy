@@ -16,7 +16,7 @@
  *
  */
 vec4
-texture2D_bilinear (sampler2D texture, vec2 uv, vec2 pixel)
+interpolated_texture2D (sampler2D texture, sampler1D kernel, vec2 uv, vec2 pixel)
 {
     vec2 texel = uv/pixel;
     vec2 f = fract(uv/pixel);

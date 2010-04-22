@@ -13,8 +13,9 @@ import texture, shader, colormap, color
 
 class Image(object):
     ''' '''
-    def __init__(self, Z, format=None, cmap=colormap.IceAndFire, vmin=None,
-                 vmax=None, interpolation='nearest', origin='lower', displace=False):
+    def __init__(self, Z, format=None, cmap=colormap.IceAndFire, vmin=None, vmax=None,
+                 interpolation='nearest', origin='lower', lighted=False, 
+                 grid=(0.0,0.0,0.0), height = 0.0):
         ''' Creates a texture from numpy array.
 
         Parameters:
@@ -48,7 +49,9 @@ class Image(object):
 
         self._lut = None
         self._interpolation = interpolation
-        self._displace = displace
+        self._lighted = lighted
+        self._grid = grid
+        self._height = height
         self.texture = texture.Texture(Z)
         self.origin = origin
         self.vmin = vmin
@@ -58,25 +61,25 @@ class Image(object):
         # Source format is RGB or RGBA, no need of a colormap
         if self.texture.src_format in [gl.GL_RGB,gl.GL_RGBA]:
             if interpolation == 'bicubic':
-                self.shader = shader.Bicubic(False, displace)
+                self.shader = shader.Bicubic(False, lighted=lighted, grid=grid, height=height)
             elif interpolation == 'bilinear':
-                self.shader = shader.Bilinear(False, displace)
+                self.shader = shader.Bilinear(False, lighted=lighted, grid=grid, height=height)
             else:
                 self.shader = None
         # Source format is not RGB or RGBA
         else:
             if cmap:
                 if interpolation == 'bicubic':
-                    self.shader = shader.Bicubic(True, displace)
+                    self.shader = shader.Bicubic(True, lighted=lighted, grid=grid, height=height)
                 elif interpolation == 'bilinear':
-                    self.shader = shader.Bilinear(True, displace)
+                    self.shader = shader.Bilinear(True, lighted=lighted, grid=grid, height=height)
                 else:
-                    self.shader = shader.Nearest(True, displace)
+                    self.shader = shader.Nearest(True, lighted=lighted, grid=grid, height=height)
             else:
                 if interpolation == 'bicubic':
-                    self.shader = shader.Bicubic(False, displace)
+                    self.shader = shader.Bicubic(False, lighted=lighted, grid=grid, height=height)
                 elif interpolation == 'bilinear':
-                    self.shader = shader.Bilinear(False, displace)
+                    self.shader = shader.Bilinear(False, lighted=lighted, grid=grid, height=height)
                 else:
                     self.shader = None
         self.cmap = cmap
@@ -126,24 +129,31 @@ class Image(object):
         self._interpolation = interpolation
         if self.texture.src_format in [gl.GL_RGB,gl.GL_RGBA]:
             if interpolation == 'bicubic':
-                self.shader = shader.Bicubic(False, self._displace)
+                self.shader = shader.Bicubic(False, lighted=self._lighted,
+                                             grid=self._grid, height=self._height)
             elif interpolation == 'bilinear':
-                self.shader = shader.Bilinear(False, self._displace)
+                self.shader = shader.Bilinear(False, lighted = self._lighted,
+                                              grid=self._grid, height=self._height)
             else:
                 self.shader = None
         else:
             if self._cmap:
                 if interpolation == 'bicubic':
-                    self.shader = shader.Bicubic(True, self._displace)
+                    self.shader = shader.Bicubic(True, lighted = self._lighted,
+                                                 grid=self._grid, height=self._height) 
                 elif interpolation == 'bilinear':
-                    self.shader = shader.Bilinear(True, self._displace)
+                    self.shader = shader.Bilinear(True, lighted = self._lighted,
+                                                  grid=self._grid, height=self._height)
                 else:
-                    self.shader = shader.Nearest(True, self._displace)
+                    self.shader = shader.Nearest(True, lighted = self._lighted,
+                                                 grid=self._grid, height=self._height) 
             else:
                 if interpolation == 'bicubic':
-                    self.shader = shader.Bicubic(False, self._displace)
+                    self.shader = shader.Bicubic(False, lighted = self._lighted,
+                                                 grid=self._grid, height=self._height)
                 elif interpolation == 'bilinear':
-                    self.shader = shader.Bilinear(False, self._displace)
+                    self.shader = shader.Bilinear(False, lighted = self._lighted,
+                                                  grid=self._grid, height=self._height)
                 else:
                     self.shader = None
     interpolation = property(_get_interpolation, _set_interpolation,
