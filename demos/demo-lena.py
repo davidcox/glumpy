@@ -13,12 +13,9 @@ window = glumpy.Window(512,512)
 Z = numpy.asarray(Image.open('lena.png'))
 n = 12
 L = glumpy.Image(Z, interpolation='bicubic')
-N = glumpy.Image(numpy.ones((n,n,3), dtype=numpy.uint8),
-                 interpolation='nearest')
-BL = glumpy.Image(numpy.zeros((n,n,3), dtype=numpy.uint8),
-                 interpolation='bilinear')
-BC = glumpy.Image(numpy.zeros((n,n,3), dtype=numpy.uint8),
-                 interpolation='bicubic')
+N = glumpy.Image(numpy.ones((n,n,3), dtype=numpy.uint8),  interpolation='nearest')
+BL = glumpy.Image(numpy.zeros((n,n,3), dtype=numpy.uint8),interpolation='bilinear')
+BC = glumpy.Image(numpy.zeros((n,n,3), dtype=numpy.uint8),interpolation='bicubic')
 
 z = 512/(3.0*n)
 shape, items = glumpy.layout([ [L, '-', '-'],
