@@ -66,13 +66,13 @@ class Bicubic(Shader):
         interpolation = read_shader('bicubic.txt')
         light         = read_shader('phong.txt')
         lut           = read_shader('lut.txt')
-        vertex        = read_shader('vertex.txt')
-        fragment      = read_shader('fragment.txt')
+        vertex        = read_shader('vertex_bicubic.txt')
+        fragment      = read_shader('fragment_bicubic.txt')
         lut_code = light_code = grid_code = ''
         if use_lut:
             lut_code = 'color = texture1D_lut(lut, color.a);'
         if lighted:
-            light_code = read_shader('light.txt')
+            light_code = read_shader('light_bicubic.txt')
         if self._gridsize[0] or self._gridsize[1] or self._gridsize[2]:
             grid_code = read_shader('grid.txt')
         fragment  = fragment % (lut_code,grid_code,light_code)

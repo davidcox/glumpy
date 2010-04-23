@@ -10,7 +10,6 @@ import numpy as np
 import OpenGL.GL as gl
 import texture, shader, colormap, color
 
-
 class Image(object):
     ''' '''
     def __init__(self, Z, format=None, cmap=colormap.IceAndFire, vmin=None, vmax=None,
@@ -129,7 +128,7 @@ class Image(object):
         self._interpolation = interpolation
         if self.texture.src_format in [gl.GL_RGB,gl.GL_RGBA]:
             if interpolation == 'bicubic':
-                self.shader = shader.Bicubic(False, lighted=self._lighted,
+                self.shader = shader.Bicubic(False, lighted = self._lighted,
                                              grid=self._grid, height=self._height)
             elif interpolation == 'bilinear':
                 self.shader = shader.Bilinear(False, lighted = self._lighted,

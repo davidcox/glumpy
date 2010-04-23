@@ -9,6 +9,7 @@
 from shader import Shader, read_shader
 import OpenGL.GL as gl
 
+
 class Bilinear(Shader):
     def __init__(self, use_lut=False, lighted=False, grid=(0.0,0.0,0.0), height=0.0):
         self._lighted = lighted
@@ -31,6 +32,7 @@ class Bilinear(Shader):
         Shader.__init__(self,
           vert = [interpolation] + [vertex],
           frag = [interpolation] + [light] + [lut] + [fragment])
+
 
     def bind(self, texture, lut=None):
         ''' Bind the program, i.e. use it. '''

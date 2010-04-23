@@ -16,7 +16,7 @@
  *
  */
 vec4
-interpolated_texture2D (sampler2D texture, sampler1D kernel, vec2 uv, vec2 pixel)
+interpolated_texture2D (sampler2D texture, vec2 uv, vec2 pixel)
 {
     vec2 texel = uv/pixel;
     vec2 f = fract(uv/pixel);
@@ -26,5 +26,4 @@ interpolated_texture2D (sampler2D texture, sampler1D kernel, vec2 uv, vec2 pixel
     vec4 bl = texture2D(texture, texel+vec2(0,1)*pixel);
     vec4 br = texture2D(texture, texel+vec2(1,1)*pixel);
     return mix(mix(tl,tr,f.x),mix(bl,br,f.x),f.y);
-    // return texture2D(texture, uv);
 }

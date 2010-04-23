@@ -33,12 +33,13 @@ class Mesh(object):
         gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
         gl.glDisableClientState(gl.GL_TEXTURE_COORD_ARRAY);
 
-
+#White = glumpy.colormap.Colormap((0.00, (1.0, 1.0, 1.0)),
+#                                 (1.00, (1.0, 1.0, 1.0)))
 
 if __name__ == '__main__':
 
-    window = glumpy.Window(800,600)
-    trackball = glumpy.Trackball(60,30,0.75)
+    window = glumpy.Window(900,600)
+    trackball = glumpy.Trackball(60,30,0.85)
     mesh = Mesh(64)
 
     def func3(x,y):
@@ -47,7 +48,8 @@ if __name__ == '__main__':
     x = numpy.arange(-3.0, 3.0, dx, dtype=numpy.float32)
     y = numpy.arange(-3.0, 3.0, dy, dtype=numpy.float32)
     Z = func3(*numpy.meshgrid(x, y))
-    I = glumpy.Image(Z, interpolation='bicubic', cmap=glumpy.colormap.Hot,
+    I = glumpy.Image(Z, interpolation='bicubic',
+                     cmap=glumpy.colormap.Hot, # cmap=White,
                      lighted=True, grid=(32,32,0), height = 0.5)
     def draw_background():
         viewport = gl.glGetIntegerv(gl.GL_VIEWPORT)
@@ -55,10 +57,11 @@ if __name__ == '__main__':
         gl.glDisable (gl.GL_DEPTH_TEST)
         gl.glPolygonMode (gl.GL_FRONT_AND_BACK, gl.GL_FILL)
         gl.glBegin(gl.GL_QUADS)
-        gl.glColor(1.0,1.0,1.0)
+        #gl.glColor(0.75,0.75,1.0)
+        gl.glColor(1.0,1.0,0.75)
         gl.glVertex(0,0,-1)
         gl.glVertex(viewport[2],0,-1)
-        gl.glColor(0.0,0.5,1.0)
+        gl.glColor(1.0,1.0,1.0)
         gl.glVertex(viewport[2],viewport[3],0)
         gl.glVertex(0,viewport[3],0)
         gl.glEnd()
@@ -81,10 +84,23 @@ if __name__ == '__main__':
 
     @window.event
     def on_init():
-        gl.glLightfv (gl.GL_LIGHT0, gl.GL_DIFFUSE, (1.0, 1.0, 1.0, 1.0))
-        gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT, (0.1, 0.1, 0.1, 1.0))
-        gl.glLightfv (gl.GL_LIGHT0, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
-        gl.glLightfv (gl.GL_LIGHT0, gl.GL_POSITION,(2.0, 2.0, 2.0, 0.0))
+       gl.glLightfv (gl.GL_LIGHT0, gl.GL_DIFFUSE, (1.0, 1.0, 1.0, 1.0))
+       gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT, (0.3, 0.3, 0.3, 1.0))
+       gl.glLightfv (gl.GL_LIGHT0, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
+       gl.glLightfv (gl.GL_LIGHT0, gl.GL_POSITION,(2.0, 2.0, 2.0, 0.0))
+
+        # gl.glLightfv (gl.GL_LIGHT0, gl.GL_DIFFUSE, (1.0, 0.0, 0.0, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT, (0.1, 0.1, 0.1, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT0, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
+        # gl.glLightfv (gl.GL_LIGHT0, gl.GL_POSITION,(1.0, 0.0, 1.0, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT1, gl.GL_DIFFUSE, (0.0, 1.0, 0.0, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT1, gl.GL_AMBIENT, (0.1, 0.1, 0.1, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT1, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
+        # gl.glLightfv (gl.GL_LIGHT1, gl.GL_POSITION,(1.0, 1.0, 1.0, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT2, gl.GL_DIFFUSE, (0.0, 0.0, 1.0, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT2, gl.GL_AMBIENT, (0.1, 0.1, 0.1, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT2, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
+        # gl.glLightfv (gl.GL_LIGHT2, gl.GL_POSITION,(0.0, 1.0, 1.0, 1.0))
 
     @window.event
     def on_mouse_drag(x, y, dx, dy, button):
