@@ -33,8 +33,13 @@ class Mesh(object):
         gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
         gl.glDisableClientState(gl.GL_TEXTURE_COORD_ARRAY);
 
+<<<<<<< local
+#White = glumpy.colormap.Colormap((0.00, (1.0, 1.0, 1.0)),
+#                                 (1.00, (1.0, 1.0, 1.0)))
+=======
 White = glumpy.colormap.Colormap((0.00, (1.0, 1.0, 1.0)),
                                  (1.00, (1.0, 1.0, 1.0)))
+>>>>>>> other
 
 if __name__ == '__main__':
 
@@ -49,8 +54,12 @@ if __name__ == '__main__':
     y = numpy.arange(-3.0, 3.0, dy, dtype=numpy.float32)
     Z = func3(*numpy.meshgrid(x, y))
     I = glumpy.Image(Z, interpolation='bicubic',
+<<<<<<< local
+                     cmap=glumpy.colormap.Hot, # cmap=White,
+=======
                      cmap=glumpy.colormap.Hot,
                      #cmap=White,
+>>>>>>> other
                      lighted=True, grid=(32,32,0), height = 0.5)
 
     def draw_background():
@@ -90,6 +99,21 @@ if __name__ == '__main__':
        gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT, (0.3, 0.3, 0.3, 1.0))
        gl.glLightfv (gl.GL_LIGHT0, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
        gl.glLightfv (gl.GL_LIGHT0, gl.GL_POSITION,(2.0, 2.0, 2.0, 0.0))
+<<<<<<< local
+
+        # gl.glLightfv (gl.GL_LIGHT0, gl.GL_DIFFUSE, (1.0, 0.0, 0.0, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT, (0.1, 0.1, 0.1, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT0, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
+        # gl.glLightfv (gl.GL_LIGHT0, gl.GL_POSITION,(1.0, 0.0, 1.0, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT1, gl.GL_DIFFUSE, (0.0, 1.0, 0.0, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT1, gl.GL_AMBIENT, (0.1, 0.1, 0.1, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT1, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
+        # gl.glLightfv (gl.GL_LIGHT1, gl.GL_POSITION,(1.0, 1.0, 1.0, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT2, gl.GL_DIFFUSE, (0.0, 0.0, 1.0, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT2, gl.GL_AMBIENT, (0.1, 0.1, 0.1, 1.0))
+        # gl.glLightfv (gl.GL_LIGHT2, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
+        # gl.glLightfv (gl.GL_LIGHT2, gl.GL_POSITION,(0.0, 1.0, 1.0, 1.0))
+=======
        # gl.glLightfv (gl.GL_LIGHT0, gl.GL_DIFFUSE, (1.0, 0.0, 0.0, 1.0))
        # gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT, (0.1, 0.1, 0.1, 1.0))
        # gl.glLightfv (gl.GL_LIGHT0, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
@@ -102,6 +126,7 @@ if __name__ == '__main__':
        # gl.glLightfv (gl.GL_LIGHT2, gl.GL_AMBIENT, (0.1, 0.1, 0.1, 1.0))
        # gl.glLightfv (gl.GL_LIGHT2, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 0.0))
        # gl.glLightfv (gl.GL_LIGHT2, gl.GL_POSITION,(0.0, 1.0, 1.0, 1.0))
+>>>>>>> other
 
     @window.event
     def on_mouse_drag(x, y, dx, dy, button):

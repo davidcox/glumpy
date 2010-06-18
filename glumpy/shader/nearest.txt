@@ -12,7 +12,7 @@
  * -------------------------------------
  */
 vec4
-interpolated_texture2D (sampler2D texture, sampler1D kernel, vec2 uv, vec2 pixel)
+interpolated_texture2D (sampler2D texture, vec2 uv, vec2 pixel)
 {
     return texture2D(texture, uv);
 }

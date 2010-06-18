@@ -11,6 +11,7 @@
  * ---------------------------
  */
 uniform sampler2D texture;
+uniform sampler1D kernel;
 uniform vec2 pixel;
 uniform float height;
 varying vec3 vertex;
@@ -18,7 +19,7 @@ void main() {
     gl_FrontColor = gl_Color;
     vec4 v = gl_Vertex;
     gl_TexCoord[0].xy = gl_MultiTexCoord0.xy;
-    v.z += height*interpolated_texture2D (texture, gl_MultiTexCoord0.xy, pixel).a;
+    v.z += height*interpolated_texture2D (texture, kernel, gl_MultiTexCoord0.xy, pixel).a;
     vertex = v.xyz;
     gl_Position = gl_ModelViewProjectionMatrix*v;
 }
