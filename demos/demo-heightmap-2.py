@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     window = glumpy.Window(width=800,height=600)
     trackball = glumpy.Trackball(60,30,0.75)
-    mesh = Mesh(32)
+    mesh = Mesh(64)
 
     # def func3(x,y):
     #     return (1-x/2+x**5+y**3)*numpy.exp(-x**2-y**2)
@@ -59,10 +59,26 @@ if __name__ == '__main__':
                      grid= (32.0,32.0,10.0), height=0.25)
 
 
+    def draw_background():
+        viewport = gl.glGetIntegerv(gl.GL_VIEWPORT)
+        gl.glDisable (gl.GL_LIGHTING)
+        gl.glDisable (gl.GL_DEPTH_TEST)
+        gl.glPolygonMode (gl.GL_FRONT_AND_BACK, gl.GL_FILL)
+        gl.glBegin(gl.GL_QUADS)
+        #gl.glColor(0.75,0.75,1.0)
+        gl.glColor(1.0,1.0,0.75)
+        gl.glVertex(0,0,-1)
+        gl.glVertex(viewport[2],0,-1)
+        gl.glColor(1.0,1.0,1.0)
+        gl.glVertex(viewport[2],viewport[3],0)
+        gl.glVertex(0,viewport[3],0)
+        gl.glEnd()
+
     @window.event
     def on_draw():
         gl.glClearColor(1,1,1,1)
         window.clear()
+        draw_background()
         trackball.push()
         gl.glEnable(gl.GL_DEPTH_TEST)
         gl.glTranslatef(0,0,-0.125)

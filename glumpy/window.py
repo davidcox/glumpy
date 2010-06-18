@@ -64,11 +64,11 @@ class Window(event.EventDispatcher, Singleton):
         event.EventDispatcher.__init__(self)
 
         self._event_queue = []
-        if width > 0:
+        if width and width > 0:
             self._width = width
         else:
             self._width = Window._default_width
-        if height > 0:
+        if height and height > 0:
             self._height = height
         else:
             self._height = Window._default_height
@@ -100,11 +100,11 @@ class Window(event.EventDispatcher, Singleton):
             glut.glutHideWindow()
         else:
             glut.glutShowWindow()
-        self.set_size(width,height)
+        self.set_size(self._width, self._height)
         screen_width = glut.glutGet(glut.GLUT_SCREEN_WIDTH)
         screen_height= glut.glutGet(glut.GLUT_SCREEN_HEIGHT)
-        glut.glutPositionWindow((screen_width-width)//2,
-                                (screen_height-height)//2)
+        glut.glutPositionWindow((screen_width-self._width)//2,
+                                (screen_height-self._height)//2)
 
 
     def _keyboard(self, code, x, y):
