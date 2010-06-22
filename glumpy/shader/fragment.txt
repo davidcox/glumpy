@@ -12,6 +12,7 @@ uniform vec2 pixel;
 uniform vec3 gridsize;
 uniform vec3 gridwidth;
 varying vec3 vertex;
+uniform int lighted;
 void main() {
     vec2 uv = gl_TexCoord[0].xy;
     vec4 color = interpolated_texture2D(texture, uv, pixel);
@@ -19,6 +20,8 @@ void main() {
     
     %s // Place holder for lut transormation if needed
     %s // Place holder for grid.txt if needed
-    %s // Place holder for light.txt if needed
+    if (lighted != 0) {
+        %s // Place holder for light.txt if needed
+    }
     gl_FragColor = mix(color*gl_Color,vec4(0.0, 0.0, 0.0, 1.0), 1.0-c);
 }

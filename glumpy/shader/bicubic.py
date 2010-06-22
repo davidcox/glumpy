@@ -58,11 +58,11 @@ def build_kernel(size=256):
 
 
 class Bicubic(Shader):
-    def __init__(self, use_lut=False, lighted=False, grid=(0.0,0.0,0.0), height=0.0):
+    def __init__(self, use_lut=False, lighted=True, grid=(0.0,0.0,0.0), elevation=0.0):
         self._lighted = lighted
         self._gridsize = grid
         self._gridwidth = (1.0,1.0,1.0)
-        self._height = height
+        self._elevation = elevation
         interpolation = read_shader('bicubic.txt')
         light         = read_shader('phong.txt')
         lut           = read_shader('lut.txt')
@@ -71,8 +71,8 @@ class Bicubic(Shader):
         lut_code = light_code = grid_code = ''
         if use_lut:
             lut_code = 'color = texture1D_lut(lut, color.a);'
-        if lighted:
-            light_code = read_shader('light_bicubic.txt')
+        #if lighted:
+        light_code = read_shader('light_bicubic.txt')
         if self._gridsize[0] or self._gridsize[1] or self._gridsize[2]:
             grid_code = read_shader('grid.txt')
         fragment  = fragment % (lut_code,grid_code,light_code)
@@ -95,7 +95,8 @@ class Bicubic(Shader):
         gl.glActiveTexture(gl.GL_TEXTURE0)
         gl.glBindTexture(texture.target, texture.id)
         self.uniformi('texture', 0)
-        self.uniformf('height', self._height)
+        self.uniformf('elevation', self._elevation)
         self.uniformf('pixel', 1.0/texture.width, 1.0/texture.height)
         self.uniformf('gridsize', *self._gridsize)
         self.uniformf('gridwidth', *self._gridwidth)
+        self.uniformi('lighted', self._lighted)

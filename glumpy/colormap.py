@@ -23,11 +23,14 @@ from color import Color
 class Colormap:
     ''' '''
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name, *args, **kwargs):
         ''' Build a new colormap from given (value,color) list.
         
         Parameters
         ----------
+           name: str
+               Colormap name
+
            args: [(value,Color),...]
                Value/color couples to build colormap from.
                Values must be normalized between 0 and 1
@@ -41,6 +44,7 @@ class Colormap:
            under: Color
                Color to be used for low out-of-range values.
         '''
+        self.name = name
         self.vcolors = []
         self.LUT = {}
         self.LUT['rgb'] = None
@@ -162,29 +166,33 @@ class Colormap:
 
 # Default colormaps
 # ------------------------------------------------------------------------------
-IceAndFire = Colormap((0.00, (0.0, 0.0, 1.0)),
+IceAndFire = Colormap("IceAndFire",
+                      (0.00, (0.0, 0.0, 1.0)),
                       (0.25, (0.0, 0.5, 1.0)),
                       (0.50, (1.0, 1.0, 1.0)),
                       (0.75, (1.0, 1.0, 0.0)),
                       (1.00, (1.0, 0.0, 0.0)))
-Ice = Colormap((0.00, (0.0, 0.0, 1.0)),
+Ice = Colormap("Ice",
+               (0.00, (0.0, 0.0, 1.0)),
                (0.50, (0.5, 0.5, 1.0)),
                (1.00, (1.0, 1.0, 1.0)))
-Fire = Colormap((0.00, (1.0, 1.0, 1.0)),
+Fire = Colormap("Fire",
+                (0.00, (1.0, 1.0, 1.0)),
                 (0.50, (1.0, 1.0, 0.0)),
                 (1.00, (1.0, 0.0, 0.0)))
-Hot = Colormap((0.00, (0.0, 0.0, 0.0)),
-                (0.33, (1.0, 0.0, 0.0)),
-                (0.66, (1.0, 1.0, 0.0)),
-                (1.00, (1.0, 1.0, 1.0)))
-Grey       = Colormap((0., (0.,0.,0.)), (1., (1.,1.,1.)))
-Grey_r     = Colormap((0., (1.,1.,1.)), (1., (0.,0.,0.)))
-DarkRed    = Colormap((0., (0.,0.,0.)), (1., (1.,0.,0.)))
-DarkGreen  = Colormap((0., (0.,0.,0.)), (1., (0.,1.,0.)))
-DarkBlue   = Colormap((0., (0.,0.,0.)), (1., (0.,0.,1.)))
-LightRed   = Colormap((0., (1.,1.,1.)), (1., (1.,0.,0.)))
-LightGreen = Colormap((0., (1.,1.,1.)), (1., (0.,1.,0.)))
-LightBlue  = Colormap((0., (1.,1.,1.)), (1., (0.,0.,1.)))
+Hot = Colormap("Hot",
+               (0.00, (0.0, 0.0, 0.0)),
+               (0.33, (1.0, 0.0, 0.0)),
+               (0.66, (1.0, 1.0, 0.0)),
+               (1.00, (1.0, 1.0, 1.0)))
+Grey       = Colormap("Grey", (0., (0.,0.,0.)), (1., (1.,1.,1.)))
+Grey_r     = Colormap("Grey_r", (0., (1.,1.,1.)), (1., (0.,0.,0.)))
+DarkRed    = Colormap("DarkRed", (0., (0.,0.,0.)), (1., (1.,0.,0.)))
+DarkGreen  = Colormap("DarkGreen",(0., (0.,0.,0.)), (1., (0.,1.,0.)))
+DarkBlue   = Colormap("DarkBlue", (0., (0.,0.,0.)), (1., (0.,0.,1.)))
+LightRed   = Colormap("LightRed", (0., (1.,1.,1.)), (1., (1.,0.,0.)))
+LightGreen = Colormap("LightGreen", (0., (1.,1.,1.)), (1., (0.,1.,0.)))
+LightBlue  = Colormap("LightBlue", (0., (1.,1.,1.)), (1., (0.,0.,1.)))
 
 
 if __name__ == '__main__':

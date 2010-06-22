@@ -34,7 +34,6 @@ class Mesh(object):
 
 
 
-
 if __name__ == '__main__':
 
     window = glumpy.Window(width=800,height=600)
@@ -56,7 +55,7 @@ if __name__ == '__main__':
     Y = numpy.transpose(Y)
     Z = numpy.sin(X) + numpy.cos(Y)
     I = glumpy.Image(Z, interpolation='bilinear', cmap=glumpy.colormap.Hot,
-                     grid= (32.0,32.0,10.0), height=0.25)
+                     grid= (32.0,32.0,10.0), elevation=0.25)
 
 
     def draw_background():

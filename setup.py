@@ -15,6 +15,7 @@ setup(name='glumpy',
       author_email='Nicolas.Rougier@loria.fr',
       url='http://code.google.com/p/glumpy/',
       packages=['glumpy',
+                'glumpy.atb',
                 'glumpy.shader'],
       package_data={'glumpy': ['shader/*.txt']},
      )

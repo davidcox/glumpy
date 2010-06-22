@@ -9,8 +9,6 @@
 import OpenGL.GL as gl
 import OpenGL.GLU as glu
 import OpenGL.GLUT as glut
-import pylab
-import colormap
 from proxy import Proxy
 from color import Color
 from image import Image
@@ -18,3 +16,14 @@ from window import Window, active_window
 from layout import layout
 from texture import Texture
 from trackball import Trackball
+import colormap
+
+try:
+    import pylab
+except:
+    pass
+try:
+    import atb
+    atb.init()
+except:
+    pass
