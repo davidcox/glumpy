@@ -194,6 +194,7 @@ class Bar(object):
 
         if not name:
             name = "Unnamed"
+        self._name = name
         self._bar = TwNewBar(name)
         if defs:
             self.define(_dict_to_defs(defs))
@@ -201,7 +202,7 @@ class Bar(object):
 
 
     def _get_name(self):
-        return check_error(TwGetBarName(self._bar))
+        return self._name
     name = property(_get_name,
                     doc='''Name of the bar''')
 
