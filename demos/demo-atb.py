@@ -19,7 +19,6 @@ def quit(*args, **kwargs):
 if __name__ == '__main__':
     window = glumpy.Window(800, 600)
     trackball = glumpy.Trackball(45,135,1.25,4)
-    atb.init()
     bar = atb.Bar(name="Controls", label="Controls",
                   help="Scene controls", position=(10, 10), size=(200, 320))
 
@@ -32,10 +31,10 @@ if __name__ == '__main__':
                 getter=trackball._get_theta, setter=trackball._set_theta)
     bar.add_var("Trackball/Zoom", step=0.01,
                 getter=trackball._get_zoom, setter=trackball._set_zoom)
-    Shape = atb.enum("Shape", [(0,'Cube'), (1,'Torus'), (2, 'Teapot')])
+    Shape = atb.enum("Shape", {'Cube':0, 'Torus':1, 'Teapot':2})
     bar.add_var("Object/Shape", shape, vtype=Shape)
     bar.add_var("Object/Fill", fill)
-    bar.add_var("Object/Color", color)
+    bar.add_var("Object/Color", color, open=True)
     bar.add_separator("")
     bar.add_button("Quit", quit, key="ESCAPE", help="Quit application")
 
@@ -82,9 +81,10 @@ if __name__ == '__main__':
 
     def on_init():
         gl.glEnable (gl.GL_LIGHT0)
-        gl.glLightfv (gl.GL_LIGHT0, gl.GL_DIFFUSE, (1.0, 1.0, 1.0, 1.0))
-        gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT, (0.1, 0.1, 0.1, 1.0))
-        gl.glLightfv (gl.GL_LIGHT0, gl.GL_POSITION,(0.0, 1.0, 2.0, 1.0))
+        gl.glLightfv (gl.GL_LIGHT0, gl.GL_DIFFUSE,  (1.0, 1.0, 1.0, 1.0))
+        gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT,  (0.1, 0.1, 0.1, 1.0))
+        gl.glLightfv (gl.GL_LIGHT0, gl.GL_SPECULAR, (0.0, 0.0, 0.0, 1.0))
+        gl.glLightfv (gl.GL_LIGHT0, gl.GL_POSITION, (0.0, 1.0, 2.0, 1.0))
         gl.glEnable (gl.GL_BLEND)
         gl.glEnable (gl.GL_COLOR_MATERIAL)
         gl.glColorMaterial(gl.GL_FRONT_AND_BACK, gl.GL_AMBIENT_AND_DIFFUSE)

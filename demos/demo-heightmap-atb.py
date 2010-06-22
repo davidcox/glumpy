@@ -6,14 +6,12 @@
 # Distributed under the terms of the BSD License. The full license is in
 # the file COPYING, distributed as part of this software.
 #-----------------------------------------------------------------------------
-from ctypes import *
+import sys
 import numpy
 import glumpy
 import glumpy.atb as atb
-import OpenGL.GL as gl
-import OpenGL.GLUT as glut
-
-
+import OpenGL.GL as gl, OpenGL.GLUT as glut
+from ctypes import *
 
 class Mesh(object):
     def __init__(self, n=64):
@@ -57,7 +55,7 @@ if __name__ == '__main__':
 
     diffuse = (c_float*4)(1.0, 1.0, 1.0, 1.0)
     ambient = (c_float*4)(0.3, 0.3, 0.3, 1.0)
-    specular = (c_float*4)(0.0, 0.0, 0.0, 0.0)
+    specular = (c_float*4)(0.0, 0.0, 0.0, 1.0)
     position = (c_float*4)(2.0, 2.0, 2.0, 0.0)
 
     Interpolation = {'nearest' : 0, 'bilinear' : 1, 'bicubic' : 2}
@@ -132,10 +130,10 @@ if __name__ == '__main__':
         trackball.pop()
 
     def on_init():
-       gl.glLightfv (gl.GL_LIGHT0, gl.GL_DIFFUSE, (1.0, 1.0, 1.0, 1.0))
-       gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT, (0.3, 0.3, 0.3, 1.0))
-       gl.glLightfv (gl.GL_LIGHT0, gl.GL_SPECULAR,(0.0, 0.0, 0.0, 1.0))
-       gl.glLightfv (gl.GL_LIGHT0, gl.GL_POSITION,(2.0, 2.0, 2.0, 0.0))
+       gl.glLightfv (gl.GL_LIGHT0, gl.GL_DIFFUSE, diffuse)
+       gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT, ambient)
+       gl.glLightfv (gl.GL_LIGHT0, gl.GL_SPECULAR,specular)
+       gl.glLightfv (gl.GL_LIGHT0, gl.GL_POSITION,position)
 
     def on_mouse_drag(x, y, dx, dy, button):
         trackball.drag_to(x,y,dx,dy)
