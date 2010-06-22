@@ -39,7 +39,7 @@ class Mesh(object):
 
 
 if __name__ == '__main__':
-
+    atb.init()
     window = glumpy.Window(900,600)
     trackball = glumpy.Trackball(60,30,0.85)
     mesh = Mesh(64)

@@ -24,6 +24,5 @@ except:
     pass
 try:
     import atb
-    atb.init()
 except:
     pass

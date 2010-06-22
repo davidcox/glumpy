@@ -14,9 +14,8 @@ name = ctypes.util.find_library('AntTweakBar')
 if not name:
     raise RuntimeError, 'AntTweakBar library not found'
 __dll__ = ctypes.CDLL(name)
-__dll__.TwInit(TW_OPENGL, 0)
 
-#TwInit         = __dll__.TwInit
+TwInit         = __dll__.TwInit
 TwTerminate    = __dll__.TwTerminate
 TwGetLastError = __dll__.TwGetLastError
 TwNewBar       = __dll__.TwNewBar

@@ -17,6 +17,7 @@ def quit(*args, **kwargs):
     sys.exit()
 
 if __name__ == '__main__':
+    atb.init()
     window = glumpy.Window(800, 600)
     trackball = glumpy.Trackball(45,135,1.25,4)
     bar = atb.Bar(name="Controls", label="Controls",

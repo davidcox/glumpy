@@ -26,8 +26,8 @@ def check_error(status, error=0):
     else:
         return status
 
-#def init():
-#    check_error( TwInit(TW_OPENGL, 0) )
+def init():
+    check_error( TwInit(TW_OPENGL, 0) )
 
 def enum(name, values):
     E = (TwEnumVal*len(values))()
