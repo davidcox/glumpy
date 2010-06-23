@@ -121,6 +121,7 @@ if __name__ == '__main__':
         gl.glLightfv (gl.GL_LIGHT0, gl.GL_DIFFUSE, diffuse)
         gl.glLightfv (gl.GL_LIGHT0, gl.GL_AMBIENT, ambient)
         gl.glLightfv (gl.GL_LIGHT0, gl.GL_SPECULAR,specular)
+        gl.glLightfv (gl.GL_LIGHT0, gl.GL_POSITION,position)
         window.clear()
         draw_background()
         trackball.push()
