@@ -50,21 +50,19 @@ if __name__ == '__main__':
     y = numpy.arange(-3.0, 3.0, dy, dtype=numpy.float32)
     Z = func3(*numpy.meshgrid(x, y))
     I = glumpy.Image(Z, interpolation='bilinear',
-                     cmap=glumpy.colormap.Hot,
-                     lighted=True, grid=(32,32,0), elevation = 0.5)
+                     cmap=glumpy.colormap.Hot, lighted=True,
+                     gridsize=(31.0,31.0,0.0), elevation = 0.5)
 
     diffuse = (c_float*4)(1.0, 1.0, 1.0, 1.0)
     ambient = (c_float*4)(0.3, 0.3, 0.3, 1.0)
     specular = (c_float*4)(0.0, 0.0, 0.0, 1.0)
     position = (c_float*4)(2.0, 2.0, 2.0, 0.0)
-
     Interpolation = {'nearest' : 0, 'bilinear' : 1, 'bicubic' : 2}
     def set_interpolation(interpolation):
         d = dict(zip(Interpolation.values(), Interpolation.keys()))
         I.interpolation = d.get(interpolation,0)
     def get_interpolation():
         return Interpolation[I.interpolation]
-
     Colormap = {'IceAndFire' : 0, 'Hot'       : 1,  'Ice'        : 2,
                 'Fire'       : 3, 'Grey'      : 4,  'Grey_r'     : 5,
                 'DarkRed'    : 6, 'DarkBlue'  : 7,  'DarkGreen'  : 8,
@@ -94,6 +92,12 @@ if __name__ == '__main__':
                 getter=get_interpolation, setter=set_interpolation)
     bar.add_var("Object/Colormap", vtype=atb.enum("Colormap",Colormap),
                 getter=get_cmap, setter=set_cmap)
+    bar.add_var("Object/Grid/X", vtype = atb.TW_TYPE_FLOAT,
+                getter=I._get_gridsize_x, setter=I._set_gridsize_x)
+    bar.add_var("Object/Grid/Y",  vtype = atb.TW_TYPE_FLOAT,
+                getter=I._get_gridsize_y, setter=I._set_gridsize_y)
+    bar.add_var("Object/Grid/Z",  vtype = atb.TW_TYPE_FLOAT,
+                getter=I._get_gridsize_z, setter=I._set_gridsize_z)
     bar.add_separator("")
     bar.add_button("Quit", quit, key="ESCAPE", help="Quit application")
 
@@ -145,8 +149,7 @@ if __name__ == '__main__':
         bar.update()
         window.draw()
 
-    window.push_handlers(on_mouse_drag, on_mouse_scroll) #, on_key_press)
+    window.push_handlers(on_mouse_drag, on_mouse_scroll)
     window.push_handlers(atb.glumpy.Handlers(window))
     window.push_handlers(on_init, on_draw)
-
     window.mainloop()

@@ -48,7 +48,7 @@ if __name__ == '__main__':
     Z = func3(*numpy.meshgrid(x, y))
     I = glumpy.Image(Z, interpolation='bicubic',
                      cmap=glumpy.colormap.Hot,
-                     lighted=True, grid=(32,32,0), elevation = 0.5)
+                     lighted=True, gridsize=(31.0,31.0,0.0), elevation = 0.5)
 
     def draw_background():
         viewport = gl.glGetIntegerv(gl.GL_VIEWPORT)

@@ -55,7 +55,7 @@ if __name__ == '__main__':
     Y = numpy.transpose(Y)
     Z = numpy.sin(X) + numpy.cos(Y)
     I = glumpy.Image(Z, interpolation='bilinear', cmap=glumpy.colormap.Hot,
-                     grid= (32.0,32.0,10.0), elevation=0.25)
+                     gridsize= (31.0,31.0,10.0), elevation=0.25)
 
 
     def draw_background():

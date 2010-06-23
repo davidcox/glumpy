@@ -58,9 +58,9 @@ def build_kernel(size=256):
 
 
 class Bicubic(Shader):
-    def __init__(self, use_lut=False, lighted=True, grid=(0.0,0.0,0.0), elevation=0.0):
+    def __init__(self, use_lut=False, lighted=True, gridsize=(0.0,0.0,0.0), elevation=0.0):
         self._lighted = lighted
-        self._gridsize = grid
+        self._gridsize = gridsize
         self._gridwidth = (1.0,1.0,1.0)
         self._elevation = elevation
         interpolation = read_shader('bicubic.txt')
