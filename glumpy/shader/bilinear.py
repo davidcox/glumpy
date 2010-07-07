@@ -11,7 +11,7 @@ import OpenGL.GL as gl
 
 
 class Bilinear(Shader):
-    def __init__(self, use_lut=False, lighted=True, gridsize=(0.0,0.0,0.0), elevation=0.0):
+    def __init__(self, use_lut=False, lighted=False, gridsize=(0.0,0.0,0.0), elevation=0.0):
         self._lighted = lighted
         self._gridsize = gridsize
         self._gridwidth = (1.0,1.0,1.0)
@@ -21,14 +21,17 @@ class Bilinear(Shader):
         lut           = read_shader('lut.txt')
         vertex        = read_shader('vertex.txt')
         fragment      = read_shader('fragment.txt')
-        lut_code = light_code = grid_code = ''
+        lut_code = light_code = grid_code = height_code = ''
         if use_lut:
             lut_code = 'color = texture1D_lut(lut, color.a);'
-        #if lighted:
-        light_code = read_shader('light.txt')
+        if lighted:
+            light_code = read_shader('light.txt')
         if self._gridsize[0] or self._gridsize[1] or self._gridsize[2]:
             grid_code = read_shader('grid.txt')
+        if self._elevation:
+            height_code = read_shader('height.txt')
         fragment  = fragment % (lut_code,grid_code,light_code)
+        vertex    = vertex % (height_code)
         Shader.__init__(self,
           vert = [interpolation] + [vertex],
           frag = [interpolation] + [light] + [lut] + [fragment])
