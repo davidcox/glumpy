@@ -7,17 +7,8 @@
  * -----------------------------------------------------------------------------
  */
 /*
- * Displacement vertex shader
- * ---------------------------
+ * Height displacement code
+ * ------------------------
  */
-uniform sampler2D texture;
-uniform vec2 pixel;
-uniform float elevation;
-varying vec3 vertex;
-void main() {
-    gl_FrontColor = gl_Color;
-    vec4 v = gl_Vertex;
-    gl_TexCoord[0].xy = gl_MultiTexCoord0.xy;
-    %s // place holder for displacment if needed
-    gl_Position = gl_ModelViewProjectionMatrix*v;
-}
+v.z += elevation*interpolated_texture2D (texture, gl_MultiTexCoord0.xy, pixel).a;
+vertex = v.xyz;

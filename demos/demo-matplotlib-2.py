@@ -13,17 +13,17 @@ from glumpy.pylab import *
 n = 120
 t0, frames, t = 0,0,0
 
-X = numpy.empty((n,n), dtype=numpy.float32)
+X = numpy.empty((n,n)) #, dtype=numpy.float32)
 X.flat = numpy.arange(n)*2*numpy.pi/n
-Y = numpy.empty((n,n), dtype=numpy.float32)
+Y = numpy.empty((n,n)) #, dtype=numpy.float32)
 Y.flat = numpy.arange(n)*2*numpy.pi/n
 Y = numpy.transpose(Y)
-Z = numpy.sin(X) + numpy.cos(Y)
+Z = (numpy.sin(X) + numpy.cos(Y)).astype(numpy.float32)
 fig = plt.figure(figsize=(7,7))
 plt.suptitle('''Generated using matplotlib,\n'''
              '''Displayed using glumpy !''', fontsize=16)
 ax = plt.subplot(111)
-ax = imshow(Z, origin='upper', interpolation='nearest', cmap=plt.cm.hot)
+ax = imshow(Z, origin='upper', interpolation='nearest') #, cmap=plt.cm.hot)
 plt.grid()
 show()
 
@@ -40,8 +40,8 @@ def on_idle(dt):
         print 'FPS: %.2f (%d frames in %.2f seconds)' % (fps, frames, t-t0)
         frames,t0 = 0, t
 
-    X += numpy.pi/15
-    Y += numpy.pi/20
+    X += numpy.pi/15.
+    Y += numpy.pi/20.
     for image, axis, alpha in items:
         image.data[...] = numpy.sin(X) + numpy.cos(Y)
         image.update()
