@@ -51,49 +51,75 @@ class Image(object):
         self._lighted = lighted
         self._gridsize = gridsize
         self._elevation = elevation
-        self.texture = texture.Texture(Z)
-        self.origin = origin
-        self.vmin = vmin
-        self.vmax = vmax
-        self.data = Z
+        self._texture = texture.Texture(Z)
+        self._origin = origin
+        self._vmin = vmin
+        self._vmax = vmax
+        self._data = Z
+        self.cmap = cmap # Take care of build
+
+
+    def build(self):
+        ''' Build shader '''
+
+        interpolation = self._interpolation
+        gridsize = self._gridsize
+        elevation = self._elevation
+        lighted = self._lighted
+        cmap = self._cmap
+        self._shader = None
 
         # Source format is RGB or RGBA, no need of a colormap
-        if self.texture.src_format in [gl.GL_RGB,gl.GL_RGBA]:
+        if self._texture.src_format in [gl.GL_RGB,gl.GL_RGBA]:
             if interpolation == 'bicubic':
-                self.shader = shader.Bicubic(False, lighted=lighted, gridsize=gridsize, elevation=elevation)
+                self._shader = shader.Bicubic(False, lighted=lighted, gridsize=gridsize, elevation=elevation)
             elif interpolation == 'bilinear':
-                self.shader = shader.Bilinear(False, lighted=lighted, gridsize=gridsize, elevation=elevation)
+                self._shader = shader.Bilinear(False, lighted=lighted, gridsize=gridsize, elevation=elevation)
             else:
-                self.shader = None
+                self._shader = None
         # Source format is not RGB or RGBA
         else:
             if cmap:
                 if interpolation == 'bicubic':
-                    self.shader = shader.Bicubic(True, lighted=lighted, gridsize=gridsize, elevation=elevation)
+                    self._shader = shader.Bicubic(True, lighted=lighted, gridsize=gridsize, elevation=elevation)
                 elif interpolation == 'bilinear':
-                    self.shader = shader.Bilinear(True, lighted=lighted, gridsize=gridsize, elevation=elevation)
+                    self._shader = shader.Bilinear(True, lighted=lighted, gridsize=gridsize, elevation=elevation)
                 else:
-                    self.shader = shader.Nearest(True, lighted=lighted, gridsize=gridsize, elevation=elevation)
+                    self._shader = shader.Nearest(True, lighted=lighted, gridsize=gridsize, elevation=elevation)
             else:
                 if interpolation == 'bicubic':
-                    self.shader = shader.Bicubic(False, lighted=lighted, gridsize=gridsize, elevation=elevation)
+                    self._shader = shader.Bicubic(False, lighted=lighted, gridsize=gridsize, elevation=elevation)
                 elif interpolation == 'bilinear':
-                    self.shader = shader.Bilinear(False, lighted=lighted, gridsize=gridsize, elevation=elevation)
+                    self._shader = shader.Bilinear(False, lighted=lighted, gridsize=gridsize, elevation=elevation)
                 else:
-                    self.shader = None
-        self.cmap = cmap
+                    self._shader = None
         self.update()
 
 
     @property
     def shape(self):
         ''' Underlying array shape. '''
-        return self.data.shape
+        return self._data.shape
+
+    @property
+    def data(self):
+        ''' Underlying array '''
+        return self._data
+
+    @property
+    def texture(self):
+        ''' Underlying texture '''
+        return self._texture
+
+    @property
+    def shader(self):
+        ''' Currently active shader '''
+        return self._shader
 
     @property
     def format(self):
         ''' Array representation format (string). '''
-        format = self.texture.src_format
+        format = self._texture.src_format
         if format == gl.GL_ALPHA:
             return 'A'
         elif format == gl.GL_LUMINANCE_ALPHA:
@@ -109,7 +135,8 @@ class Image(object):
         self._cmap = cmap
         colors = self.cmap.LUT['rgb'][1:].flatten().view((np.float32,3))
         self._lut = texture.Texture(colors)
-        self.interpolation = self.interpolation # This is not a no-op line
+        self.build()
+#        self.interpolation = self.interpolation # This is not a no-op line
     cmap = property(_get_cmap, _set_cmap,
                     doc=''' Colormap to be used to represent the array. ''')
 
@@ -118,8 +145,7 @@ class Image(object):
         return self._elevation
     def _set_elevation(self, elevation):
         self._elevation = elevation
-        if self.shader:
-            self.shader._elevation = self._elevation
+        self.build()
     elevation = property(_get_elevation, _set_elevation,
                     doc=''' Image elevation. ''')
 
@@ -135,8 +161,7 @@ class Image(object):
         return self._lighted
     def _set_lighted(self, lighted):
         self._lighted = lighted
-        if self.shader:
-            self.shader._lighted = lighted
+        self.build()
     lighted = property(_get_lighted, _set_lighted,
                        doc=''' Indicate whether image is ligthed. ''')
 
@@ -145,35 +170,36 @@ class Image(object):
         return self._interpolation
     def _set_interpolation(self, interpolation):
         self._interpolation = interpolation
-        if self.texture.src_format in [gl.GL_RGB,gl.GL_RGBA]:
-            if interpolation == 'bicubic':
-                self.shader = shader.Bicubic(False, lighted = self._lighted,
-                                             gridsize=self.gridsize, elevation=self._elevation)
-            elif interpolation == 'bilinear':
-                self.shader = shader.Bilinear(False, lighted = self._lighted,
-                                              gridsize=self.gridsize, elevation=self._elevation)
-            else:
-                self.shader = None
-        else:
-            if self._cmap:
-                if interpolation == 'bicubic':
-                    self.shader = shader.Bicubic(True, lighted = self._lighted,
-                                                 gridsize=self.gridsize, elevation=self._elevation) 
-                elif interpolation == 'bilinear':
-                    self.shader = shader.Bilinear(True, lighted = self._lighted,
-                                                  gridsize=self.gridsize, elevation=self._elevation)
-                else:
-                    self.shader = shader.Nearest(True, lighted = self._lighted,
-                                                 gridsize=self.gridsize, elevation=self._elevation) 
-            else:
-                if interpolation == 'bicubic':
-                    self.shader = shader.Bicubic(False, lighted = self._lighted,
-                                                 gridsize=self.gridsize, elevation=self._elevation)
-                elif interpolation == 'bilinear':
-                    self.shader = shader.Bilinear(False, lighted = self._lighted,
-                                                  gridsize=self.gridsize, elevation=self._elevation)
-                else:
-                    self.shader = None
+        self.build()
+        # if self.texture.src_format in [gl.GL_RGB,gl.GL_RGBA]:
+        #     if interpolation == 'bicubic':
+        #         self.shader = shader.Bicubic(False, lighted = self._lighted,
+        #                                      gridsize=self.gridsize, elevation=self._elevation)
+        #     elif interpolation == 'bilinear':
+        #         self.shader = shader.Bilinear(False, lighted = self._lighted,
+        #                                       gridsize=self.gridsize, elevation=self._elevation)
+        #     else:
+        #         self.shader = None
+        # else:
+        #     if self._cmap:
+        #         if interpolation == 'bicubic':
+        #             self.shader = shader.Bicubic(True, lighted = self._lighted,
+        #                                          gridsize=self.gridsize, elevation=self._elevation) 
+        #         elif interpolation == 'bilinear':
+        #             self.shader = shader.Bilinear(True, lighted = self._lighted,
+        #                                           gridsize=self.gridsize, elevation=self._elevation)
+        #         else:
+        #             self.shader = shader.Nearest(True, lighted = self._lighted,
+        #                                          gridsize=self.gridsize, elevation=self._elevation) 
+        #     else:
+        #         if interpolation == 'bicubic':
+        #             self.shader = shader.Bicubic(False, lighted = self._lighted,
+        #                                          gridsize=self.gridsize, elevation=self._elevation)
+        #         elif interpolation == 'bilinear':
+        #             self.shader = shader.Bilinear(False, lighted = self._lighted,
+        #                                           gridsize=self.gridsize, elevation=self._elevation)
+        #         else:
+        #             self.shader = None
     interpolation = property(_get_interpolation, _set_interpolation,
                              doc=''' Interpolation method. ''')
 
@@ -202,8 +228,7 @@ class Image(object):
         return self._gridsize[2]
     def _set_gridsize(self, gridsize):
         self._gridsize = gridsize
-        if self.shader:
-            self.shader._gridsize = gridsize
+        self.build()
     def _set_gridsize_x(self, x):
         self.gridsize = (x, self._gridsize[1], self._gridsize[2])
     def _set_gridsize_y(self, y):
@@ -220,24 +245,24 @@ class Image(object):
         else:
             vmin = self.vmin
         if self.vmax is None:
-            vmax = self.data.max()
+            vmax = self._data.max()
         else:
             vmax = self.vmax
         if self._lut:
             s = self._lut.width
-            self.texture.update(bias = 1.0/(s-1)-vmin*((s-3.1)/(s-1))/(vmax-vmin),
-                                scale = ((s-3.1)/(s-1))/(vmax-vmin))
+            self._texture.update(bias = 1.0/(s-1)-vmin*((s-3.1)/(s-1))/(vmax-vmin),
+                                 scale = ((s-3.1)/(s-1))/(vmax-vmin))
         else:
-            self.texture.update(bias=-vmin/(vmax-vmin),scale=1.0/(vmax-vmin))
+            self._texture.update(bias=-vmin/(vmax-vmin),scale=1.0/(vmax-vmin))
 
     def blit(self, x, y, w, h):
         ''' Blit array onto active framebuffer. '''
-        if self.shader:
-            self.shader.bind(self.texture,self._lut)
+        if self._shader:
+            self._shader.bind(self.texture,self._lut)
         if self.origin == 'lower':
             t=0,1
         else:
             t=1,0
-        self.texture.blit(x,y,w,h,t=t)
-        if self.shader:
-            self.shader.unbind()
+        self._texture.blit(x,y,w,h,t=t)
+        if self._shader:
+            self._shader.unbind()
