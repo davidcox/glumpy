@@ -8,6 +8,7 @@
 #-----------------------------------------------------------------------------
 
 include setup.py
+include common.py
 include MANIFEST.in
 include COPYING.txt
 include README.txt

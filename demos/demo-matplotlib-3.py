@@ -27,7 +27,6 @@ im1 = imshow(Z1, cmap=plt.cm.gray, interpolation='nearest', extent=extent)
 Z2 = func3(X, Y)
 im2 = imshow(Z2, cmap=plt.cm.jet, alpha=.9,
              interpolation='bilinear', extent=extent)
-
 show()
 window = glumpy.active_window()
 window.mainloop()

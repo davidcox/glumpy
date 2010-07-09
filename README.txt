@@ -1,4 +1,3 @@
-
 Description
 ===========
 
@@ -10,7 +9,6 @@ simulation while it is running, then glumpy can help you.
 
 Dependencies
 -----------
-
 glumpy is made on top of PyOpenGL (http://pyopengl.sourceforge.net/) and since
 glumpy is dedicated to numpy visualization, you obviously need numpy
 (http://numpy.scipy.org/). You will also need IPython
@@ -22,15 +20,12 @@ Some demos require matplotlib (http://matplotlib.sourceforge.net/) and scipy
 
 Mailing lists
 -------------
-
 The main forum for glumpy discussion is the glumpy-users mailing list at
 http://groups.google.com/group/glumpy-users. You can browse the mailing list
 online or provide your email address for immediate or digest updates.
 
-
 How does it work ?
 ==================
-
 glumpy uses OpenGL textures to represent arrays since it is probably the
 fastest method of visualization on modern graphic hardware. However, the
 drawback is that it implies some restriction on the type and shape of arrays

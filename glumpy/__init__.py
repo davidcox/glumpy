@@ -26,3 +26,9 @@ try:
     import atb
 except:
     pass
+
+try:
+    from version import version as __version__
+except:
+    __version__ = 'nobuilt'
+

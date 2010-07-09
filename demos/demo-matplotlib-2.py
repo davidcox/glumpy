@@ -9,7 +9,6 @@
 import numpy, glumpy
 from glumpy.pylab import *
 
-
 n = 120
 t0, frames, t = 0,0,0
 
