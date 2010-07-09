@@ -21,7 +21,6 @@ def configuration(parent_package='',top_path=None, package_name=DISTNAME):
         os.remove('MANIFEST')
     write_info(os.path.join("glumpy", "info.py"))
     write_version(os.path.join("glumpy", "version.py"))
-    # XXX: find a way to include the doc in sdist
     if os.path.exists(os.path.join("doc", "src")):
         write_version(os.path.join("doc", "src", "glumpy_version.py"))
     pkg_prefix_dir = 'glumpy'
@@ -46,7 +45,6 @@ def configuration(parent_package='',top_path=None, package_name=DISTNAME):
     return config
 
 if __name__ == "__main__":
-    # setuptools version of config script
     setup(configuration=configuration,
           name=DISTNAME,
           install_requires=INSTALL_REQUIRE,
@@ -56,22 +54,3 @@ if __name__ == "__main__":
           package_data={'glumpy': ['shader/*.txt']},
           zip_safe=False,
           classifiers=CLASSIFIERS)
-
-
-
-
-
-
-# from distutils.core import setup
-
-# setup(name='glumpy',
-#       version='beta',
-#       description='Fast OpenGL numpy visualization',
-#       author='Nicolas P. Rougier',
-#       author_email='Nicolas.Rougier@loria.fr',
-#       url='http://code.google.com/p/glumpy/',
-#       packages=['glumpy',
-#                 'glumpy.atb',
-#                 'glumpy.shader'],
-#       package_data={'glumpy': ['shader/*.txt']},
-#      )
