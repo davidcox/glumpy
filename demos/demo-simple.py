@@ -10,11 +10,9 @@ import numpy, glumpy
 
 window = glumpy.Window(512,512)
 Z = numpy.random.random((32,32)).astype(numpy.float32)
-I = glumpy.Image(Z, interpolation='nearest', cmap=glumpy.colormap.Grey)
+I = glumpy.Image(Z)
 
 @window.event
 def on_draw():
-    window.clear()
     I.blit(0,0,window.width,window.height)
-
 window.mainloop()

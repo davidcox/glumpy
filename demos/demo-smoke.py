@@ -31,12 +31,13 @@ v_    = numpy.zeros((size,size), dtype=numpy.float32)
 dens  = numpy.zeros((size,size), dtype=numpy.float32)
 dens_ = numpy.zeros((size,size), dtype=numpy.float32)
 Z = numpy.zeros((N,N),dtype=numpy.float32)
-I = glumpy.Image(Z, interpolation='bicubic',
-                 cmap=glumpy.colormap.Grey, vmin=0, vmax=5)
 
+cmap = glumpy.colormap.Colormap("BlueGrey",
+                                (0., (0.,0.,0.)), (1., (0.75,0.75,1.00)))
+I = glumpy.Image(Z, interpolation='bicubic', cmap=cmap, vmin=0, vmax=5)
 t, t0, frames = 0,0,0
 
-window = glumpy.Window(512,512)
+window = glumpy.Window(800,800)
 window.last_drag = None
 
 @window.event

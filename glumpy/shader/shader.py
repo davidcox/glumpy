@@ -31,14 +31,14 @@
     texture.blit(x,y,w,h)
     shader.unbind()
 '''
-import os, sys
+import os
 import OpenGL.GL as gl
 import ctypes
 
 class Shader:
     ''' Base shader class. '''
 
-    def __init__(self, vert = [], frag = [], geom = [], name=''):
+    def __init__(self, vert = None, frag = None, name=''):
         ''' vert, frag and geom take arrays of source strings
             the arrays will be concatenated into one string by OpenGL.'''
 
@@ -52,19 +52,21 @@ class Shader:
         self._build_shader(vert, gl.GL_VERTEX_SHADER)
         # create the fragment shader
         self._build_shader(frag, gl.GL_FRAGMENT_SHADER)
-        # the geometry shader will be the same, once pyglet supports the extension
-        # self.createShader(frag, GL_GEOMETRY_SHADER_EXT)
-        # attempt to link the program
+        # the geometry shader will be the same, once pyglet supports the
+        # extension self.createShader(frag, GL_GEOMETRY_SHADER_EXT) attempt to
+        # link the program
         self._link()
 
-    def _build_shader(self, strings, type):
+    def _build_shader(self, strings, stype):
+        ''' Actual building of the shader '''
+
         count = len(strings)
         # if we have no source code, ignore this shader
         if count < 1:
             return
 
         # create the shader handle
-        shader = gl.glCreateShader(type)
+        shader = gl.glCreateShader(stype)
 
         # Upload shader code
         gl.glShaderSource(shader, strings)
@@ -81,7 +83,7 @@ class Shader:
             print gl.glGetShaderInfoLog(shader)
         else:
             # all is well, so attach the shader to the program
-            gl.glAttachShader(self.handle, shader);
+            gl.glAttachShader(self.handle, shader)
 
     def _link(self):
         ''' Link the program '''
@@ -94,7 +96,8 @@ class Shader:
         # if linking failed, print the log
         if not temp:
             # retrieve the log length
-            gl.glGetProgramiv(self.handle, gl.GL_INFO_LOG_LENGTH, ctypes.byref(temp))
+            gl.glGetProgramiv(self.handle,
+                              gl.GL_INFO_LOG_LENGTH, ctypes.byref(temp))
             # create a buffer for the log
             #buffer = ctypes.create_string_buffer(temp.value)
             # retrieve the log text
@@ -110,8 +113,8 @@ class Shader:
         gl.glUseProgram(self.handle)
 
     def unbind(self):
-        ''' Unbind whatever program is currently bound - not necessarily this program,
-            so this should probably be a class method instead. '''
+        ''' Unbind whatever program is currently bound - not necessarily this
+            program, so this should probably be a class method instead. '''
         gl.glUseProgram(0)
 
     def uniformf(self, name, *vals):
@@ -157,7 +160,7 @@ class Shader:
         self.uniforms[name] = loc
 
         # Upload the 4x4 floating point matrix
-        gl.glUniformMatrix4fv(loc, 1, False, (c_float * 16)(*mat))
+        gl.glUniformMatrix4fv(loc, 1, False, (ctypes.c_float * 16)(*mat))
 
 
 
@@ -165,8 +168,8 @@ def read_shader(filename):
     ''' Read a file from within the shader directory and return content '''
     
     dirname = os.path.dirname(__file__)
-    path = os.path.join(dirname,filename)
-    file = open(path)
-    buffer = file.read()
-    file.close()
-    return buffer
+    path = os.path.join(dirname, filename)
+    fid = open(path)
+    buf = fid.read()
+    fid.close()
+    return buf

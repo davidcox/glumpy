@@ -12,6 +12,7 @@ include common.py
 include MANIFEST.in
 include COPYING.txt
 include README.txt
+include glumpy/shader/*.txt
 include demos/*.py
 include demos/*.png
 

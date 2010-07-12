@@ -25,8 +25,8 @@ DOWNLOAD_URL        = 'http://pypi.python.org/pypi/glumpy'
 
 MAJOR = 0
 MINOR = 1
-MICRO = 0
-DEV = True
+MICRO = 1
+DEV = False
 
 CLASSIFIERS = ['Development Status :: 4 - Beta',
                'Environment :: MacOS X',

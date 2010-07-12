@@ -74,7 +74,7 @@ if __name__ == '__main__':
         return Colormap[I.cmap.name]
 
     bar = atb.Bar(name="Controls", label="Controls",
-                  help="Scene controls", position=(10, 10), size=(200, 320))
+                  help="Scene controls", position=(10, 10), size=(200, 340))
     bar.add_var("Trackball/Phi", step=0.5,
                 getter=trackball._get_phi, setter=trackball._set_phi)
     bar.add_var("Trackball/Theta", step=0.5,
@@ -93,11 +93,11 @@ if __name__ == '__main__':
     bar.add_var("Object/Colormap", vtype=atb.enum("Colormap",Colormap),
                 getter=get_cmap, setter=set_cmap)
     bar.add_var("Object/Grid/X", vtype = atb.TW_TYPE_FLOAT,
-                getter=I._get_gridsize_x, setter=I._set_gridsize_x)
+                getter=I._get_gridsize_x, setter=I._set_gridsize_x, min=0)
     bar.add_var("Object/Grid/Y",  vtype = atb.TW_TYPE_FLOAT,
-                getter=I._get_gridsize_y, setter=I._set_gridsize_y)
+                getter=I._get_gridsize_y, setter=I._set_gridsize_y, min=0)
     bar.add_var("Object/Grid/Z",  vtype = atb.TW_TYPE_FLOAT,
-                getter=I._get_gridsize_z, setter=I._set_gridsize_z)
+                getter=I._get_gridsize_z, setter=I._set_gridsize_z, min=0)
     bar.add_separator("")
     bar.add_button("Quit", quit, key="ESCAPE", help="Quit application")
 
