@@ -24,8 +24,8 @@ LICENSE             = 'BSD'
 DOWNLOAD_URL        = 'http://pypi.python.org/pypi/glumpy'
 
 MAJOR = 0
-MINOR = 2
-MICRO = 0
+MINOR = 1
+MICRO = 1
 DEV = False
 
 CLASSIFIERS = ['Development Status :: 4 - Beta',
