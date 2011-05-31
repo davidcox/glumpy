@@ -13,6 +13,7 @@ import OpenGL.GLUT as glut
 import key, mouse, event, proxy
 import _ctypes
 import threading
+import traceback
 import IPython
 
 if sys.platform in ['linux2', 'darwin']:
@@ -79,7 +80,7 @@ class Window(event.EventDispatcher, Singleton):
         if _window is None:
             glut.glutInit(sys.argv)
             glut.glutInitDisplayMode(glut.GLUT_DOUBLE |
-                                     glut.GLUT_RGB    |
+                                     glut.GLUT_RGBA   |
                                      glut.GLUT_DEPTH)
             self._window_id = glut.glutCreateWindow(self._caption)
         glut.glutDisplayFunc(self._display)
@@ -351,6 +352,14 @@ class Window(event.EventDispatcher, Singleton):
         glut.glutMainLoop()
 
 
+
+    def exit(self):
+        '''Exit mainloop'''
+        if (glut.glutLeaveMainLoop):
+            glut.glutLeaveMainLoop()
+        else:
+            sys.exit();
+
     def timer(self, *args):
         '''Function decorator for a timed handler.
         
@@ -403,7 +412,6 @@ class Window(event.EventDispatcher, Singleton):
         width  = glut.glutGet(glut.GLUT_WINDOW_WIDTH)
         height = glut.glutGet(glut.GLUT_WINDOW_HEIGHT)
         return width,height
-
 
     def clear(self):
         '''Clear the window.

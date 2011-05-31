@@ -52,7 +52,7 @@ def on_mouse_motion(x, y, dx, dy):
 def on_key_press(key, modifiers):
     global dens, dens_, u, u_, v, v_
     if key == glumpy.key.ESCAPE:
-        sys.exit()
+        window.exit();
     elif key == glumpy.key.SPACE:
         dens[...] = dens_[...] = 0.0
         u[...] = u_[...] = 0.0
