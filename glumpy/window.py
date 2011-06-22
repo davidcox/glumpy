@@ -60,7 +60,7 @@ class Window(event.EventDispatcher, Singleton):
     _default_height = 480
 
 
-    def __init__(self, width=None, height=None, caption=None, visible=True):
+    def __init__(self, width=None, height=None, caption=None, visible=True, fullscreen=False):
 
         event.EventDispatcher.__init__(self)
 
@@ -76,6 +76,9 @@ class Window(event.EventDispatcher, Singleton):
         if caption is None:
             caption = sys.argv[0]
         self._caption = caption
+
+        self._saved_width  = self._width
+        self._saved_height = self._height
 
         if _window is None:
             glut.glutInit(sys.argv)
@@ -106,13 +109,16 @@ class Window(event.EventDispatcher, Singleton):
         screen_height= glut.glutGet(glut.GLUT_SCREEN_HEIGHT)
         glut.glutPositionWindow((screen_width-self._width)//2,
                                 (screen_height-self._height)//2)
+        self.fullscreen = fullscreen
 
 
     def _keyboard(self, code, x, y):
-        modifiers = glut.glutGetModifiers()
-        self.dispatch_event('on_key_press',
-                            self._keyboard_translate(code),
-                            self._modifiers_translate(modifiers))
+         symbol = self._keyboard_translate(code)
+         modifiers = glut.glutGetModifiers()
+         modifiers = self._modifiers_translate(modifiers)
+         state= self.dispatch_event('on_key_press', symbol, modifiers)
+         if not state and symbol == key.ESCAPE:
+             sys.exit()
 
     def _keyboard_up(self, code, x, y):
         modifiers = glut.glutGetModifiers()
@@ -352,6 +358,21 @@ class Window(event.EventDispatcher, Singleton):
         glut.glutMainLoop()
 
 
+    def get_fullscreen(self):
+        ''' Get fullscreen mode '''
+        return self._fullscreen
+
+
+    def set_fullscreen(self, state):
+        ''' Exit fullscreen mode '''
+        self._fullscreen = state
+        if state:
+            self._saved_width  = glut.glutGet(glut.GLUT_WINDOW_WIDTH)
+            self._saved_height = glut.glutGet(glut.GLUT_WINDOW_HEIGHT)
+            glut.glutFullScreen()
+        else:
+            glut.glutReshapeWindow(self._saved_width, self._saved_height)
+
 
     def exit(self):
         '''Exit mainloop'''
@@ -464,6 +485,13 @@ class Window(event.EventDispatcher, Singleton):
 
 
     # These are the only properties that can be set
+    fullscreen = property(get_fullscreen,
+                          set_fullscreen,
+         doc='''Fullscreen mode.
+         
+         :type: bool
+         ''')
+
     width = property(lambda self: self.get_size()[0],
                      lambda self, width: self.set_size(width, self.height),
          doc='''The width of the window, in pixels.  Read-write.
