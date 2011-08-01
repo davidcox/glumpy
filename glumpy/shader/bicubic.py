@@ -64,7 +64,10 @@ class Bicubic(Shader):
         self._gridwidth = (1.0,1.0,1.0)
         self._elevation = elevation
         interpolation = read_shader('bicubic.txt')
-        light         = read_shader('phong.txt')
+        if lighted:
+            light     = read_shader('phong.txt')
+        else:
+            light     = ''
         lut           = read_shader('lut.txt')
         vertex        = read_shader('vertex_bicubic.txt')
         fragment      = read_shader('fragment_bicubic.txt')

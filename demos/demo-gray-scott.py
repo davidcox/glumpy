@@ -43,7 +43,7 @@ from dana import *
 import glumpy
 
 n  = 150
-dt = 1*second
+dt = .1*second
 t  = 5000*second
 
 # Parameters from http://www.aliensaint.com/uo/java/rd/
@@ -109,7 +109,9 @@ def on_draw():
 @window.event
 def on_idle(*args):
     for i in range(10):
+        Z.propagate()
         Z.evaluate(dt=dt)
+        Z.update()
     Zu.update()
     window.draw()
 window.mainloop()
