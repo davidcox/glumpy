@@ -17,10 +17,10 @@ class Bilinear(Shader):
         self._gridwidth = (1.0,1.0,1.0)
         self._elevation = elevation
         interpolation = read_shader('bilinear.txt')
-        if lighted:
-            light     = read_shader('phong.txt')
-        else:
-            ligth     = ''
+        #if lighted:
+        light     = read_shader('phong.txt')
+        #else:
+        #    light     = ' '
         lut           = read_shader('lut.txt')
         vertex        = read_shader('vertex.txt')
         fragment      = read_shader('fragment.txt')

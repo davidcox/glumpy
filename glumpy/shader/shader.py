@@ -50,10 +50,10 @@ class Shader:
         self.linked = False
         # create the vertex shader
         self._build_shader(vert, gl.GL_VERTEX_SHADER)
-        self._vert = vert
+        self._vert = '\n'.join(vert).split('\n')
         # create the fragment shader
         self._build_shader(frag, gl.GL_FRAGMENT_SHADER)
-        self._frag = frag
+        self._frag = '\n'.join(frag).split('\n')
         # the geometry shader will be the same, once pyglet supports the
         # extension self.createShader(frag, GL_GEOMETRY_SHADER_EXT) attempt to
         # link the program
