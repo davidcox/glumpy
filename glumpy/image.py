@@ -57,6 +57,7 @@ class Image(object):
         self._vmax = vmax
         self._data = Z
         self.cmap = cmap   # This takes care of actual build
+        self._shader = None
         self.build()
 
     def build(self):
@@ -228,6 +229,8 @@ class Image(object):
             vmax = self._data.max()
         else:
             vmax = self.vmax
+        if vmin == vmax:
+            vmin, vmax = 0, 1
         if self._lut:
             s = self._lut.width
             self._texture.update(bias = 1.0/(s-1)-vmin*((s-3.1)/(s-1))/(vmax-vmin),
@@ -243,6 +246,7 @@ class Image(object):
             t=0,1
         else:
             t=1,0
+        gl.glColor(1,1,1,1)
         self._texture.blit(x,y,w,h,t=t)
         if self._shader:
             self._shader.unbind()
