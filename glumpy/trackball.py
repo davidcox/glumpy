@@ -166,9 +166,9 @@ class Trackball(object):
         viewport = gl.glGetIntegerv(gl.GL_VIEWPORT)
         width,height = float(viewport[2]), float(viewport[3])
         x  = (x*2.0 - width)/width
-        dx = 2*dx/width
+        dx = (2.*dx)/width
         y  = (y*2.0 - height)/height
-        dy = 2*dy/height
+        dy = (2.*dy)/height
         q = self._rotate(x,y,dx,dy)
         self._rotation = _q_add(q,self._rotation)
         self._count += 1
