@@ -115,7 +115,9 @@ class Texture(object):
             gl.glTexCoord2f(s[1], 0), gl.glVertex2f(x+w, y+h)
             gl.glTexCoord2f(s[1], 1), gl.glVertex2f(x+w, y)
             gl.glEnd()
-
+        gl.glDisable (gl.GL_TEXTURE_1D)
+        gl.glDisable (gl.GL_TEXTURE_2D)
+            
 
     def _build (self, Z, format=None):
         ''' Build a new texture from Z and format. '''
