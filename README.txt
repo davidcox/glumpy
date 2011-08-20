@@ -48,6 +48,7 @@ can experience live update in displayed arrays when their contents is changed.
 Example usage
 -------------
 
+
 demo-simple.py::
 
   import numpy, glumpy
