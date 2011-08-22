@@ -184,6 +184,7 @@ class Window(event.EventDispatcher, Singleton):
 
 
     def _display(self):
+        #self.clear()
         self.dispatch_event('on_draw')
         self.flip()
 
@@ -519,8 +520,8 @@ Window.register_event_type('on_mouse_leave')
 Window.register_event_type('on_expose')
 Window.register_event_type('on_resize')
 Window.register_event_type('on_move')
-Window.register_event_type('on_activate')
-Window.register_event_type('on_deactivate')
+# Window.register_event_type('on_activate')
+# Window.register_event_type('on_deactivate')
 Window.register_event_type('on_show')
 Window.register_event_type('on_hide')
 Window.register_event_type('on_draw')
