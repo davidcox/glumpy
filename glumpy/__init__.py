@@ -13,6 +13,9 @@ from proxy import Proxy
 from color import Color
 from image import Image
 from window import Window, active_window
+from figure import Figure, figure, Frame, show
+from label import Label
+from vertex_buffer import VertexBuffer
 from layout import layout
 from texture import Texture
 from trackball import Trackball
