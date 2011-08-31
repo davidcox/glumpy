@@ -19,7 +19,7 @@ def _make_glumpy_map():
         ret[getattr(glumpy.key, "_"+c)] = ord(c)
     ret.update({
             glumpy.key.SPACE:     ord(' '),
-            glumpy.key.BACKSPACE: ord('\b'),
+            glumpy.key.BACKSPACE: TW_KEY_BACKSPACE,
             glumpy.key.RETURN:    ord('\r'),
             glumpy.key.PERIOD:    ord('.'),
             glumpy.key.MINUS:     ord('-'),
@@ -27,6 +27,7 @@ def _make_glumpy_map():
             glumpy.key.RIGHT:     TW_KEY_RIGHT,
             glumpy.key.UP:        TW_KEY_UP,
             glumpy.key.DOWN:      TW_KEY_DOWN,
+            glumpy.key.DELETE:    TW_KEY_DELETE
     })
     return ret
 
@@ -39,7 +40,6 @@ _glumpy_button_map = {
 }
 
 def map_key(key):
-    print key
     return _glumpy_key_map[key]
 
 def map_button(button):
