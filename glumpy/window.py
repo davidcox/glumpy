@@ -149,11 +149,19 @@ class Window(event.EventDispatcher, Singleton):
         return _modifiers
 
     def _keyboard_translate(self, code):
-        ascii = ord(code.lower())
-        if (0x020 <= ascii <= 0x040) or (0x05b <= ascii <= 0x07e):
+        
+        if getattr(code, 'lower', None):
+            ascii = ord(code)
+        else:
+            ascii = None
+
+        if ascii is not None and \
+            (0x020 <= ascii <= 0x07e):
+            #           (0x020 <= ascii <= 0x040) or (0x05b <= ascii <= 0x07e):
             return ascii
-        elif ascii < 0x020:
-            if   ascii == 0x008: return key.BACKSPACE
+        elif ascii is not None and (ascii < 0x020 or ascii == 0x07f):
+            if   ascii == 0x07F: return key.BACKSPACE
+            elif ascii == 0x008: return key.DELETE 
             elif ascii == 0x009: return key.TAB
             elif ascii == 0x00A: return key.LINEFEED
             elif ascii == 0x00C: return key.CLEAR
