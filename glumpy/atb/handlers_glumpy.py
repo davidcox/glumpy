@@ -13,7 +13,8 @@ from raw import *
 def _make_glumpy_map():
     ret = {}
     for c in string.letters:
-        ret[getattr(glumpy.key, c.upper())] = ord(c)
+        ret[getattr(glumpy.key, c)] = ord(c)
+        ret[getattr(glumpy.key, c.upper())] = ord(c.upper())
     for c in string.digits:
         ret[getattr(glumpy.key, "_"+c)] = ord(c)
     ret.update({
@@ -22,6 +23,10 @@ def _make_glumpy_map():
             glumpy.key.RETURN:    ord('\r'),
             glumpy.key.PERIOD:    ord('.'),
             glumpy.key.MINUS:     ord('-'),
+            glumpy.key.LEFT:      TW_KEY_LEFT,
+            glumpy.key.RIGHT:     TW_KEY_RIGHT,
+            glumpy.key.UP:        TW_KEY_UP,
+            glumpy.key.DOWN:      TW_KEY_DOWN,
     })
     return ret
 
@@ -34,6 +39,7 @@ _glumpy_button_map = {
 }
 
 def map_key(key):
+    print key
     return _glumpy_key_map[key]
 
 def map_button(button):
