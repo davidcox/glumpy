@@ -1,0 +1,4 @@
+*.pyc
+*.egg-info
+glumpy/info.py
+glumpy/version.py
